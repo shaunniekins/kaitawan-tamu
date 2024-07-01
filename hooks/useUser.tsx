@@ -1,4 +1,4 @@
-import { getUser } from "@/utils/functions/userFetch";
+import { getUser } from "@/utils/supabase-functions/userFetch";
 import { useState, useEffect } from "react";
 
 export const useUser = () => {
