@@ -15,7 +15,7 @@ const AdminComponent = () => {
   return (
     <>
       {isSigningOut ? (
-        <div className="box">
+        <div className="box justify-center">
           <div>Signing out...</div>
         </div>
       ) : (

@@ -5,5 +5,9 @@
 @tailwind utilities;
 
 .box {
-    @apply h-[100svh] w-screen flex justify-center items-center font-body
+    @apply min-h-[100svh] w-screen flex items-center font-body overflow-x-hidden
+}
+
+.bottom-tab-buttons {
+    @apply flex-1 flex flex-col justify-center items-center text-sm  py-2 border-t-3
 }
