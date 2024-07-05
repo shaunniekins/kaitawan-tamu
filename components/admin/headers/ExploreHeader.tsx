@@ -7,6 +7,8 @@ import { Button, Input } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { IoIosNotificationsOutline } from "react-icons/io";
+import { IoChatboxOutline } from "react-icons/io5";
 
 const ExploreHeader = () => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -63,7 +65,7 @@ const ExploreHeader = () => {
           />
 
           <div className="flex flex-col justify-end items-end">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
               <Button
                 isIconOnly
                 variant="light"
@@ -71,14 +73,23 @@ const ExploreHeader = () => {
                 radius="sm"
                 className="p-0 m-0"
                 onClick={() => {}}>
-                {/* <MdOutlineAssistant size={30} /> */}
-                <Image
+                <IoIosNotificationsOutline size={30} />
+              </Button>
+              <Button
+                isIconOnly
+                variant="light"
+                disableAnimation
+                radius="sm"
+                className="p-0 m-0"
+                onClick={() => {}}>
+                {/* <Image
                   src="/images/virtual-assistant.png"
                   alt="Virtual Assistant Icon"
                   width={50}
                   height={50}
                   className="rounded-full"
-                />
+                /> */}
+                <IoChatboxOutline size={25} />
               </Button>
             </div>
           </div>

@@ -43,7 +43,7 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-const BottomBarComponent = () => {
+const BottomNavBarComponent = () => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -68,7 +68,7 @@ const BottomBarComponent = () => {
           {navigationItems.map(({ path, name, Icon }) => (
             <button
               key={name}
-              className={`bottom-tab-buttons ${
+              className={`bottom-navtab-buttons ${
                 pathname === path ? "border-blue-700 bg-blue-50" : ""
               }`}
               onClick={() => router.push(path)}>
@@ -89,4 +89,4 @@ const BottomBarComponent = () => {
   );
 };
 
-export default BottomBarComponent;
+export default BottomNavBarComponent;

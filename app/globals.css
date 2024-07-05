@@ -8,6 +8,16 @@
     @apply min-h-[100svh] w-screen flex items-center font-body overflow-x-hidden
 }
 
-.bottom-tab-buttons {
+.bottom-navtab-buttons {
     @apply flex-1 flex flex-col justify-center items-center text-sm py-2 border-t-3
 }
+
+.main-container {
+    @apply max-w-4xl h-full w-full flex items-start flex-col overflow-x-hidden overflow-y-auto
+}
+
+.product-details-container {
+    @apply flex flex-col gap-4 mt-5;
+    @layer grid-cols;
+    grid-template-columns: 2fr 1fr;
+  }

@@ -3,15 +3,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardFooter,
-  Image,
-  Avatar,
-  Chip,
-} from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Avatar, Chip } from "@nextui-org/react";
 import { TiShoppingCart } from "react-icons/ti";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { sellMockupData } from "@/app/api/sell";
@@ -37,7 +29,7 @@ const ExplorePage = () => {
   const router = useRouter();
 
   return (
-    <div className="max-w-4xl h-full w-full flex items-center flex-col overflow-x-hidden overflow-y-auto">
+    <div className="main-container">
       <div className="w-full flex overflow-x-auto md:mt-2 mb-2 gap-2">
         {tags.map((tag) => (
           <Chip
@@ -51,10 +43,10 @@ const ExplorePage = () => {
       </div>
       <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-3">
         {filteredData.map((item) => (
-          <div onClick={() => router.push(`explore/${item.id}`)}>
-            <Card key={item.id} className="rounded-md shadow-none">
-              <CardBody className="bg-blue-200 p-0 h-40 w-full">
-                <Image
+          <div key={item.id} onClick={() => router.push(`explore/${item.id}`)}>
+            <Card className="rounded-md shadow-none">
+              <CardBody className="p-0 h-40 w-full">
+                <img
                   alt="Card background"
                   className="object-cover rounded-none w-full h-40 rounded-b-md"
                   src={item.imageUrl}
