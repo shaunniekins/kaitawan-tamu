@@ -2,10 +2,10 @@
 
 "use client";
 
-import { Avatar, Button, Chip } from "@nextui-org/react";
+import { Avatar, Badge, Button, Chip } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { IoIosNotificationsOutline } from "react-icons/io";
-import { IoChevronBack } from "react-icons/io5";
+import { useState } from "react";
+import { IoChevronBack, IoChevronDown, IoChevronUp } from "react-icons/io5";
 
 interface ExploreItemProps {
   id: number;
@@ -28,36 +28,44 @@ const ExploreItem = ({
 }: ExploreItemProps) => {
   const router = useRouter();
 
+  const [showAll, setShowAll] = useState(false);
+
   const offers = [
     {
       price: "PHP 1,000",
       until: "Monday, 2024 July 08",
       from: "Seller Name 1",
+      status: "Active",
     },
     {
       price: "PHP 1,500",
       until: "Friday, 2024 July 12",
       from: "Seller Name 2",
+      status: "Expired",
     },
     {
       price: "PHP 2,000",
       until: "Wednesday, 2024 July 31",
       from: "Seller Name 3",
+      status: "Cancelled",
     },
     {
       price: "PHP 2,000",
       until: "Wednesday, 2024 July 31",
       from: "Seller Name 3",
+      status: "Cancelled",
     },
     {
       price: "PHP 2,000",
       until: "Wednesday, 2024 July 31",
       from: "Seller Name 3",
+      status: "Expired",
     },
     {
       price: "PHP 2,000",
       until: "Wednesday, 2024 July 31",
       from: "Seller Name 3",
+      status: "Active",
     },
   ];
 
@@ -91,7 +99,8 @@ const ExploreItem = ({
                 variant="solid"
                 radius="sm"
                 color="danger"
-                onClick={() => {}}>
+                onClick={() => {}}
+              >
                 Visit Store
               </Button>
             </div>
@@ -102,16 +111,49 @@ const ExploreItem = ({
               Bidding Offers{" "}
               <span className="font-normal">({offers.length})</span>
             </h3>
-            {offers.map((offer, index) => (
-              <div key={index} className="flex flex-col my-3 px-3">
-                <div className="flex justify-between">
-                  <h6 className="text-sm">Price: {offer.price}</h6>
-                  <h6 className="text-sm">Until: {offer.until}</h6>
-                </div>
-                <h6 className="text-sm">From: {offer.from}</h6>
-                <hr />
-              </div>
-            ))}
+            {offers
+              .slice(0, showAll ? offers.length : 3)
+              .map((offer, index) => (
+                <Badge
+                  content="Highest Bidder"
+                  color="secondary"
+                  variant="flat"
+                  size="sm"
+                  className={`${index !== 0 && "hidden"} mr-7 mb-10`}
+                >
+                  <div key={index} className="w-full flex flex-col my-3">
+                    <div className="flex justify-between">
+                      <h6 className="text-sm">Offer: {offer.price}</h6>
+                      <h6 className="text-xs italic">{offer.until}</h6>
+                    </div>
+                    <div className="flex justify-between">
+                      <h6 className="text-sm">{offer.from}</h6>
+                      <h6
+                        className={`text-xs ${
+                          offer.status === "Active"
+                            ? "text-green-500"
+                            : offer.status === "Expired"
+                            ? "text-orange-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {offer.status}
+                      </h6>
+                    </div>
+                    <hr />
+                  </div>
+                </Badge>
+              ))}
+            <div className="flex justify-center">
+              <Button
+                size="sm"
+                endContent={showAll ? <IoChevronUp /> : <IoChevronDown />}
+                variant={showAll ? "bordered" : "solid"}
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? "Show Less" : "Show All"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -127,7 +169,8 @@ const ExploreItem = ({
               radius="sm"
               color="primary"
               fullWidth
-              onClick={() => {}}>
+              onClick={() => {}}
+            >
               Offer Bid
             </Button>
             <Button
@@ -135,7 +178,8 @@ const ExploreItem = ({
               radius="sm"
               color="danger"
               fullWidth
-              onClick={() => {}}>
+              onClick={() => {}}
+            >
               Add to Cart
             </Button>
           </div>
