@@ -17,7 +17,7 @@
 }
 
 .product-details-container {
-    @apply flex flex-col gap-4 mt-5 w-full;
+    @apply flex flex-col gap-4 w-full;
     @layer grid-cols;
     grid-template-columns: 2fr 1fr;
   }

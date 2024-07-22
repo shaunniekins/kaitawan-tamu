@@ -8,6 +8,7 @@ import { TiShoppingCart } from "react-icons/ti";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { sellMockupData } from "@/app/api/sell";
 import { useRouter } from "next/navigation";
+import ExploreHeader from "../headers/ExploreHeader";
 
 const ExplorePage = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -29,7 +30,10 @@ const ExplorePage = () => {
   const router = useRouter();
 
   return (
-    <div className="main-container">
+    <>
+    <ExploreHeader />
+
+    <div className="main-container px-2 py-4">
       <div className="w-full flex overflow-x-auto md:mt-2 mb-2 gap-2">
         {tags.map((tag) => (
           <Chip
@@ -75,6 +79,8 @@ const ExplorePage = () => {
         ))}
       </div>
     </div>
+    </>
+
   );
 };
 

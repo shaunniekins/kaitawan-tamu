@@ -6,6 +6,7 @@ import { Avatar, Badge, Button, Chip } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { IoChevronBack, IoChevronDown, IoChevronUp } from "react-icons/io5";
+import ExploreItemHeader from "../headers/ExploreItemHeader";
 
 interface ExploreItemProps {
   id: number;
@@ -43,6 +44,7 @@ const ExploreItem = ({
       from: "Seller Name 2",
       status: "Expired",
     },
+
     {
       price: "PHP 2,000",
       until: "Wednesday, 2024 July 31",
@@ -71,11 +73,8 @@ const ExploreItem = ({
 
   return (
     <>
+      <ExploreItemHeader />
       <div className="main-container justify-start">
-        <Button onClick={() => router.back()}>
-          <IoChevronBack />
-          back
-        </Button>
         <div className="product-details-container overflow-x-hidden">
           <div className="w-full">
             <img
@@ -84,7 +83,7 @@ const ExploreItem = ({
               className="object-cover w-full h-full"
             />
           </div>
-          <div className="w-full flex-col ">
+          <div className="w-full flex-col px-2">
             <div className="flex justify-between items-center">
               <h2 className="font-semibold text-3xl">{productPrice}</h2>
               <Chip color="primary">{tag}</Chip>
@@ -106,7 +105,7 @@ const ExploreItem = ({
             </div>
             {/* <h1 className="text-xs">{id}</h1> */}
           </div>
-          <div className="w-full bg-gray-50 flex flex-col justify-between py-3">
+          <div className="w-full bg-gray-50 flex flex-col justify-between py-3 px-2">
             <h3 className="font-semibold font-lg">
               Bidding Offers{" "}
               <span className="font-normal">({offers.length})</span>
@@ -115,11 +114,12 @@ const ExploreItem = ({
               .slice(0, showAll ? offers.length : 3)
               .map((offer, index) => (
                 <Badge
+                  key={`badge-${index}`}
                   content="Highest Bidder"
                   color="secondary"
                   variant="flat"
                   size="sm"
-                  className={`${index !== 0 && "hidden"} mr-7 mb-10`}
+                  className={`${index !== 0 && "hidden"} mr-7 md:mr-0 mb-10`}
                 >
                   <div key={index} className="w-full flex flex-col my-3">
                     <div className="flex justify-between">
@@ -144,7 +144,11 @@ const ExploreItem = ({
                   </div>
                 </Badge>
               ))}
-            <div className="flex justify-center">
+            <div
+              className={`flex justify-center ${
+                offers.length <= 3 && "hidden"
+              }`}
+            >
               <Button
                 size="sm"
                 endContent={showAll ? <IoChevronUp /> : <IoChevronDown />}
@@ -157,6 +161,7 @@ const ExploreItem = ({
           </div>
         </div>
       </div>
+      {/* footer */}
       <div className="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
         <div className="max-w-4xl mx-auto flex justify-around items-center gap-5 px-2 border-t-3 py-1">
           <div className="flex flex-col items-center">

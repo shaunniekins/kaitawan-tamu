@@ -13,8 +13,8 @@ const Navigation = ({ children }: NavigationProps) => {
   return (
     <section className="box flex-col">
       {/* <DefaultHeader /> */}
-      <ExploreHeader />
-      <div className="h-full w-full px-2 py-4 mt-12 mb-16 md:flex md:flex-col md:justify-center md:items-center">
+      {/* <ExploreHeader /> */}
+      <div className="h-full w-full mt-12 mb-16 md:flex md:flex-col md:justify-center md:items-center">
         {children}
         <BottomNavBarComponent />
       </div>

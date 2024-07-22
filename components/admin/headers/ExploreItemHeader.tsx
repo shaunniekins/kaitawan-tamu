@@ -1,4 +1,4 @@
-// components/admin/headers/ExploreHeader.tsx
+// components/admin/headers/ExploreItemHeader.tsx
 
 "use client";
 
@@ -8,27 +8,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { IoIosNotificationsOutline } from "react-icons/io";
-import { IoChatboxOutline } from "react-icons/io5";
+import { IoCartOutline, IoChatboxOutline, IoChevronBack } from "react-icons/io5";
+import { useRouter } from "next/navigation";
 
-const ExploreHeader = () => {
+const ExploreItemHeader = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const router = useRouter();
 
   return (
     <>
       <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
         <div className="w-full max-w-4xl flex justify-between items-center">
-          {/* <Link
-            href="/ident/member"
-            className="flex items-center text-2xl font-bold mr-1">
-            <Image
-              src="/images/logo.svg"
-              alt="Kaitawan Tamu Logo"
-              width={50}
-              height={50}
-              className="rounded-full"
-            />
-          </Link> */}
+          <button onClick={() => router.back()} 
+          className="p-0 ml-1 mr-2 text-2xl text-gray-600"
+          // variant="light"
+          //  size="lg"
+           >
+            <IoChevronBack />
+          </button>
           <Input
             isClearable
             onClear={() => setSearchValue("")}
@@ -72,25 +70,11 @@ const ExploreHeader = () => {
                 disableAnimation
                 radius="sm"
                 className="p-0 m-0"
-                onClick={() => {}}>
-                <IoIosNotificationsOutline size={30} />
+                onClick={() => router.push("/ident/member/cart")} 
+              >
+                <IoCartOutline size={30} />
               </Button>
-              <Button
-                isIconOnly
-                variant="light"
-                disableAnimation
-                radius="sm"
-                className="p-0 m-0"
-                onClick={() => {}}>
-                {/* <Image
-                  src="/images/virtual-assistant.png"
-                  alt="Virtual Assistant Icon"
-                  width={50}
-                  height={50}
-                  className="rounded-full"
-                /> */}
-                <IoChatboxOutline size={25} />
-              </Button>
+              
             </div>
           </div>
         </div>
@@ -99,4 +83,4 @@ const ExploreHeader = () => {
   );
 };
 
-export default ExploreHeader;
+export default ExploreItemHeader;
