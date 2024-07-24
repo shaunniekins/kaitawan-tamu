@@ -103,27 +103,49 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
               />
             ))}
             {previewImages.length < 5 && (
-              <label
-                className={`flex-shrink-0 w-20 h-20 flex flex-col items-center px-4 py-6 bg-gray-200 text-blue rounded-lg tracking-wide uppercase border border-blue hover:bg-blue hover:text-white ${
-                  !isDisabled && "cursor-pointer"
-                }`}
-              >
-                <div className="h-full w-full flex items-center justify-center">
-                  <img
-                    src="/add_photo.svg"
-                    alt="Add"
-                    className="rounded-lg h-12 w-12 object-cover"
+              <div className="flex items-center justify-center gap-3">
+                <label
+                  className={`flex-shrink-0 w-20 h-20 flex flex-col items-center px-4 py-6 bg-gray-200 text-blue rounded-lg tracking-wide uppercase border border-blue hover:bg-blue hover:text-white ${
+                    !isDisabled && "cursor-pointer"
+                  }`}
+                >
+                  <div className="h-full w-full flex items-center justify-center">
+                    <img
+                      src="/gallery.svg"
+                      alt="Add"
+                      className="rounded-lg h-12 w-12 object-cover"
+                    />
+                  </div>
+                  <input
+                    disabled={isDisabled}
+                    type="file"
+                    className="hidden"
+                    accept="image/jpeg, image/png"
+                    onChange={handleImageChange}
                   />
-                </div>
-                <input
-                  disabled={isDisabled}
-                  type="file"
-                  className="hidden"
-                  accept="image/jpeg, image/png"
-                  capture="environment"
-                  onChange={handleImageChange}
-                />
-              </label>
+                </label>
+                <label
+                  className={`flex-shrink-0 w-20 h-20 flex flex-col items-center px-4 py-6 bg-gray-200 text-blue rounded-lg tracking-wide uppercase border border-blue hover:bg-blue hover:text-white ${
+                    !isDisabled && "cursor-pointer"
+                  } ${isDisabled || !isMobile && 'hidden'}`}
+                >
+                  <div className="h-full w-full flex items-center justify-center">
+                    <img
+                      src="/add_photo.svg"
+                      alt="Capture"
+                      className="rounded-lg h-12 w-12 object-cover"
+                    />
+                  </div>
+                  <input
+                    disabled={isDisabled || !isMobile}
+                    type="file"
+                    className="hidden"
+                    accept="image/jpeg, image/png"
+                    {...(isMobile ? { capture: "environment" } : {})}
+                    onChange={handleImageChange}
+                  />
+                </label>
+              </div>
             )}
           </div>
         </div>
