@@ -1,5 +1,5 @@
 // ImageSelector.tsx
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
@@ -79,12 +79,22 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
     onChange(newImages, newPreviews);
   };
 
-  const isMobile =
-    typeof window !== "undefined" &&
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      window.navigator.userAgent
-    );
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      const userAgent = typeof window !== "undefined" ? window.navigator.userAgent : "";
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    };
+
+    setIsMobile(checkIfMobile());
+  console.log("mobile:", checkIfMobile());
+
+  }, []);
+
+
   const backend = isMobile ? TouchBackend : HTML5Backend;
+
 
   return (
     <DndProvider backend={backend}>
@@ -127,7 +137,7 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
                 <label
                   className={`flex-shrink-0 w-20 h-20 flex flex-col items-center px-4 py-6 bg-gray-200 text-blue rounded-lg tracking-wide uppercase border border-blue hover:bg-blue hover:text-white ${
                     !isDisabled && "cursor-pointer"
-                  } ${isDisabled || !isMobile && 'hidden'}`}
+                  } ${!isMobile && "hidden"}`}
                 >
                   <div className="h-full w-full flex items-center justify-center">
                     <img
@@ -137,11 +147,11 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
                     />
                   </div>
                   <input
-                    disabled={isDisabled || !isMobile}
+                    disabled={isDisabled}
                     type="file"
                     className="hidden"
                     accept="image/jpeg, image/png"
-                    {...(isMobile ? { capture: "environment" } : {})}
+                    capture="environment"
                     onChange={handleImageChange}
                   />
                 </label>
