@@ -43,15 +43,17 @@ const SellPage = () => {
         <div className="product-details-container overflow-x-hidden">
           <div className="w-full flex-col px-2">
             <div className="w-full flex flex-col gap-6 py-3 mt-3">
-              <div className="">
-              <ImageSelector
-                isDisabled={false}
-                title="Items"
-                selectedImages={selectedImages}
-                previewImages={previewImages}
-                onChange={handleImagesChange}
-              />
-              <p className="text-xs text-gray-600">1-5 images only. Drag and drop to reorder.</p>
+              <div>
+                <ImageSelector
+                  isDisabled={false}
+                  title="Items"
+                  selectedImages={selectedImages}
+                  previewImages={previewImages}
+                  onChange={handleImagesChange}
+                />
+                <p className="text-xs text-gray-600">
+                  1-5 images only. Drag and drop to reorder.
+                </p>
               </div>
               <Select
                 fullWidth
@@ -114,7 +116,7 @@ const SellPage = () => {
             fullWidth
             className="text-white font-semibold"
             isDisabled={
-              !selectedImages.length  ||
+              !selectedImages.length ||
               !selectedCategory ||
               !selectedCondition ||
               !itemName ||

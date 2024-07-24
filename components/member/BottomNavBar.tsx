@@ -37,8 +37,8 @@ const navigationItems: NavigationItem[] = [
     Icon: MdOutlineSell,
   },
   {
-    path: "/ident/member/profile",
-    name: "Profile",
+    path: "/ident/member/account",
+    name: "Account",
     Icon: MdOutlinePerson,
   },
 ];

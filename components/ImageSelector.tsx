@@ -83,18 +83,17 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
 
   useEffect(() => {
     const checkIfMobile = () => {
-      const userAgent = typeof window !== "undefined" ? window.navigator.userAgent : "";
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+      const userAgent =
+        typeof window !== "undefined" ? window.navigator.userAgent : "";
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        userAgent
+      );
     };
 
     setIsMobile(checkIfMobile());
-  console.log("mobile:", checkIfMobile());
-
   }, []);
 
-
   const backend = isMobile ? TouchBackend : HTML5Backend;
-
 
   return (
     <DndProvider backend={backend}>

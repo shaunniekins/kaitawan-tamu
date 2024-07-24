@@ -30,7 +30,7 @@ const navigationItems = [
   { name: "Cart", icon: MdOutlineShoppingCart, component: CartPage },
   { name: "Sell", icon: MdOutlineAdd, component: SellPage },
   { name: "Listing", icon: MdOutlineSell, component: ListingPage },
-  { name: "Profile", icon: MdOutlinePerson, component: ProfilePage },
+  { name: "Account", icon: MdOutlinePerson, component: ProfilePage },
 ];
 
 const MemberComponent = () => {

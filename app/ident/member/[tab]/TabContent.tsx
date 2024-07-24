@@ -26,7 +26,7 @@ export default function TabContent() {
     case "/ident/member/listing":
       activeComponent = <ListingPage />;
       break;
-    case "/ident/member/profile":
+    case "/ident/member/account":
       activeComponent = <ProfilePage />;
       break;
     default:

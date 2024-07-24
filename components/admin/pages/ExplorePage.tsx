@@ -31,56 +31,61 @@ const ExplorePage = () => {
 
   return (
     <>
-    <ExploreHeader />
-
-    <div className="main-container px-2 py-4">
-      <div className="w-full flex overflow-x-auto md:mt-2 mb-2 gap-2">
-        {tags.map((tag) => (
-          <Chip
-            key={tag}
-            color={selectedTags.includes(tag) ? "primary" : "default"}
-            className="cursor-pointer"
-            onClick={() => toggleTagSelection(tag)}>
-            {tag}
-          </Chip>
-        ))}
-      </div>
-      <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-3">
-        {filteredData.map((item) => (
-          <div key={item.id} onClick={() => router.push(`explore/${item.id}`)}>
-            <Card className="rounded-md shadow-none">
-              <CardBody className="p-0 h-40 w-full">
-                <img
-                  alt="Card background"
-                  className="object-cover rounded-none w-full h-40 rounded-b-md"
-                  src={item.imageUrl}
-                />
-              </CardBody>
-              <CardFooter className="py-1 px-0 flex-col items-start rounded-none">
-                <div className="w-full flex justify-between">
-                  <p className="font-semibold text-sm truncate">
-                    {item.productName}
-                  </p>
-                  <div className="flex gap-1">
-                    <TiShoppingCart size={20} />
-                    <FaRegMoneyBillAlt size={20} />
+      <ExploreHeader />
+      <div className="main-container px-2 py-4">
+        <div className="w-full flex overflow-x-auto md:mt-2 mb-2 gap-2">
+          {tags.map((tag) => (
+            <Chip
+              key={tag}
+              color={selectedTags.includes(tag) ? "primary" : "default"}
+              className="cursor-pointer"
+              onClick={() => toggleTagSelection(tag)}
+            >
+              {tag}
+            </Chip>
+          ))}
+        </div>
+        <div className="w-full grid grid-cols-2 md:grid-cols-5 gap-3">
+          {filteredData.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => router.push(`explore/${item.id}`)}
+            >
+              <Card className="rounded-md shadow-none">
+                <CardBody className="p-0 h-40 w-full">
+                  <img
+                    alt="Card background"
+                    className="object-cover rounded-none w-full h-40 rounded-b-md"
+                    src={item.imageUrl}
+                  />
+                </CardBody>
+                <CardFooter className="py-1 px-0 flex-col items-start rounded-none">
+                  <div className="w-full flex justify-between">
+                    <p className="font-semibold text-sm truncate">
+                      {item.productName}
+                    </p>
+                    <div className="flex gap-1">
+                      <TiShoppingCart size={20} />
+                      <FaRegMoneyBillAlt size={20} />
+                    </div>
                   </div>
-                </div>
-                <h4 className="font-semibold text-medium">
-                  {item.productPrice}
-                </h4>
-                <div className="flex gap-1">
-                  <Avatar src={item.sellerAvatar} className="w-4 h-4 text-xs" />
-                  <h6 className="text-xs truncate">{item.sellerName}</h6>
-                </div>
-              </CardFooter>
-            </Card>
-          </div>
-        ))}
+                  <h4 className="font-semibold text-medium">
+                    {item.productPrice}
+                  </h4>
+                  <div className="flex gap-1">
+                    <Avatar
+                      src={item.sellerAvatar}
+                      className="w-4 h-4 text-xs"
+                    />
+                    <h6 className="text-xs truncate">{item.sellerName}</h6>
+                  </div>
+                </CardFooter>
+              </Card>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
     </>
-
   );
 };
 
