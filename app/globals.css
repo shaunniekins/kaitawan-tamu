@@ -12,8 +12,9 @@
     @apply flex-1 flex flex-col justify-center items-center text-sm py-2 border-t-3
 }
 
+/* w-full */
 .main-container {
-    @apply max-w-4xl h-full w-full flex items-start flex-col overflow-x-hidden overflow-y-auto
+    @apply max-w-4xl w-screen h-full flex items-start flex-col overflow-x-hidden overflow-y-auto
 }
 
 .product-details-container {

@@ -49,6 +49,11 @@ const BottomNavBarComponent = () => {
 
   // Function to check if the current pathname matches any base path with an additional segment
   const shouldHideBottomBar = () => {
+    // Directly return true if the current pathname is exactly "/ident/member/sell"
+    if (pathname === "/ident/member/sell") {
+      return true;
+    }
+
     // Check if pathname matches "/basepath/anySegment"
     return navigationItems.some(({ path }) => {
       const regex = new RegExp(`^${path}/[^/]+$`);
@@ -71,7 +76,8 @@ const BottomNavBarComponent = () => {
               className={`bottom-navtab-buttons ${
                 pathname === path ? "border-blue-700 bg-blue-50" : ""
               }`}
-              onClick={() => router.push(path)}>
+              onClick={() => router.push(path)}
+            >
               <Icon
                 size={25}
                 className={`${
