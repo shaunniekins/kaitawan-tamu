@@ -2,6 +2,7 @@
 import React, { ChangeEvent, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
 
 interface ImageUploaderProps {
   isDisabled?: boolean;
@@ -78,12 +79,19 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
     onChange(newImages, newPreviews);
   };
 
+  const isMobile =
+    typeof window !== "undefined" &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      window.navigator.userAgent
+    );
+  const backend = isMobile ? TouchBackend : HTML5Backend;
+
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={backend}>
       <div className="flex flex-col gap-2">
         <label className="text-blue-700 hidden">{title}</label>
         <div className="overflow-x-auto">
-      <div className="flex gap-2 w-max">
+          <div className="flex gap-2 w-max">
             {previewImages.map((preview, index) => (
               <DraggableImage
                 key={index}
@@ -111,7 +119,8 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
                   disabled={isDisabled}
                   type="file"
                   className="hidden"
-                  accept="image/*"
+                  accept="image/jpeg, image/png"
+                  capture="environment"
                   onChange={handleImageChange}
                 />
               </label>
