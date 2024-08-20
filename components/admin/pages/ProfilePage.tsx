@@ -24,9 +24,9 @@ const ProfilePage = () => {
           </Badge>
           <div className="flex flex-col">
             <h1 className="text-3xl font-semibold font-sans truncate">
-              Shaun Niel Ochavo
+              Bruce Wayne
             </h1>
-            <h2 className="text-xs truncate">shaunniel02@gmail.com</h2>
+            <h2 className="text-xs truncate">bruce.wayne@example.com</h2>
           </div>
         </div>
       </header>
