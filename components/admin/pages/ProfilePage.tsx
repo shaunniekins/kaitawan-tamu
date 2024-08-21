@@ -2,6 +2,7 @@
 
 "use client";
 
+import { signOutMember } from "@/utils/supabase-functions/signOut";
 import { Avatar, Badge, Switch } from "@nextui-org/react";
 import { IoCamera } from "react-icons/io5";
 
@@ -34,13 +35,14 @@ const ProfilePage = () => {
         <div className="product-details-container overflow-x-hidden">
           <div className="w-full flex-col px-2">
             <div className="w-full flex flex-col gap-4 mt-20">
-              <h1 className="text-lg">Settings</h1>
+              {/* <h1 className="text-lg">Settings</h1>
               <div className="flex justify-between">
                 <h2>Dark Mode</h2>
                 <Switch defaultSelected size="sm">
                   <span className="text-xs">System Default</span>
                 </Switch>
-              </div>
+              </div> */}
+              <button onClick={() => signOutMember()}>Signout</button>
             </div>
           </div>
         </div>

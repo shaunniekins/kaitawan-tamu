@@ -43,7 +43,8 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
         />
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2"
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit}
+        >
           <div className="flex flex-col rounded-md shadow-sm gap-3 mb-16">
             <Input
               type="email"
@@ -66,7 +67,8 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
                   type="button"
                   onClick={() =>
                     setIsInputUserPasswordVisible(!isInputUserPasswordVisible)
-                  }>
+                  }
+                >
                   {isInputUserPasswordVisible ? (
                     <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
                   ) : (
@@ -87,9 +89,10 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
           isDisabled={role === "admin"}
           color="primary"
           onClick={() => {
-            router.push(`/ident/${role}/signup`);
+            return router.push(`/ident/${role}/signup`);
           }}
-          className="mb-10">
+          className="mb-10"
+        >
           {role !== "admin" ? "Create New Account" : "Administrator"}
         </Button>
       </div>

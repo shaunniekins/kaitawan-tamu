@@ -8,7 +8,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { IoIosNotificationsOutline } from "react-icons/io";
-import { IoCartOutline, IoChatboxOutline, IoChevronBack } from "react-icons/io5";
+import {
+  IoCartOutline,
+  IoChatboxOutline,
+  IoChevronBack,
+} from "react-icons/io5";
 import { useRouter } from "next/navigation";
 
 const ExploreItemHeader = () => {
@@ -20,11 +24,12 @@ const ExploreItemHeader = () => {
     <>
       <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
         <div className="w-full max-w-4xl flex justify-between items-center">
-          <button onClick={() => router.back()} 
-          className="p-0 ml-1 mr-2 text-2xl text-gray-600"
-          // variant="light"
-          //  size="lg"
-           >
+          <button
+            onClick={() => router.back()}
+            className="p-0 ml-1 mr-2 text-2xl text-gray-600"
+            // variant="light"
+            //  size="lg"
+          >
             <IoChevronBack />
           </button>
           <Input
@@ -70,11 +75,12 @@ const ExploreItemHeader = () => {
                 disableAnimation
                 radius="sm"
                 className="p-0 m-0"
-                onClick={() => router.push("/ident/member/cart")} 
+                onClick={() => {
+                  return router.push("/ident/member/cart");
+                }}
               >
                 <IoCartOutline size={30} />
               </Button>
-              
             </div>
           </div>
         </div>

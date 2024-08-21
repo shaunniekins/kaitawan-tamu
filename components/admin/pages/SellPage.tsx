@@ -5,9 +5,28 @@
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import SellHeader from "../headers/SellHeader";
 import ImageSelector from "@/components/ImageSelector";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { insertItemInventoryData } from "@/app/api/itemInventoryData";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
 const SellPage = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth
+      .getUser()
+      .then(({ data: { user } }) => {
+        setUser(user);
+      })
+      .catch((error) => {
+        console.error("Error fetching user:", error);
+      });
+  }, [supabase]);
+
   const categoryOptions = [
     "Clothing",
     "Electronics",
@@ -31,10 +50,36 @@ const SellPage = () => {
     setPreviewImages(newPreviews);
   };
 
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedCondition, setSelectedCondition] = useState<string>("");
-  const [itemName, setItemName] = useState<string>("");
-  const [itemPrice, setItemPrice] = useState<number>(0);
+  const [newSelectedCategory, setNewSelectedCategory] = useState<string>("");
+  const [newSelectedCondition, setNewSelectedCondition] = useState<string>("");
+  const [newItemName, setNewItemName] = useState<string>("");
+  const [newItemPrice, setNewItemPrice] = useState<number>(0);
+
+  const handleInsertItem = async (e: any) => {
+    e.preventDefault();
+
+    const newRecord = {
+      item_name: newItemName,
+      item_price: newItemPrice,
+      item_category: newSelectedCategory,
+      item_condition: newSelectedCondition,
+      seller_id: user?.id,
+    };
+
+    const response = await insertItemInventoryData(newRecord);
+
+    if (!response) {
+      console.error("Error inserting item:", response);
+      return;
+    }
+    setNewItemName("");
+    setNewItemPrice(0);
+    setNewSelectedCategory("");
+    setNewSelectedCondition("");
+    setSelectedImages([]);
+
+    return router.push("/ident/member/listing");
+  };
 
   return (
     <>
@@ -62,7 +107,7 @@ const SellPage = () => {
                 className="w-full"
                 labelPlacement="outside"
                 placeholder="Select a category"
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => setNewSelectedCategory(e.target.value)}
               >
                 {categoryOptions.map((category) => (
                   <SelectItem key={category}>{category}</SelectItem>
@@ -75,7 +120,7 @@ const SellPage = () => {
                 size="md"
                 labelPlacement="outside"
                 placeholder="Select item condition"
-                onChange={(e) => setSelectedCondition(e.target.value)}
+                onChange={(e) => setNewSelectedCondition(e.target.value)}
               >
                 {conditionOptions.map((condition) => (
                   <SelectItem key={condition}>{condition}</SelectItem>
@@ -87,7 +132,7 @@ const SellPage = () => {
                 label="Item Name"
                 labelPlacement="outside"
                 placeholder="Input item name"
-                onChange={(e) => setItemName(e.target.value)}
+                onChange={(e) => setNewItemName(e.target.value)}
               />
               <Input
                 fullWidth
@@ -95,7 +140,7 @@ const SellPage = () => {
                 label="Item Price"
                 labelPlacement="outside"
                 placeholder="0.00"
-                onChange={(e) => setItemPrice(Number(e.target.value))}
+                onChange={(e) => setNewItemPrice(Number(e.target.value))}
                 startContent={
                   <div className="pointer-events-none flex items-center">
                     <span className="text-default-400 text-small">₱</span>
@@ -117,12 +162,12 @@ const SellPage = () => {
             className="text-white font-semibold"
             isDisabled={
               !selectedImages.length ||
-              !selectedCategory ||
-              !selectedCondition ||
-              !itemName ||
-              !itemPrice
+              !newSelectedCategory ||
+              !newSelectedCondition ||
+              !newItemName ||
+              !newItemPrice
             }
-            onClick={() => {}}
+            onClick={handleInsertItem}
           >
             List it
           </Button>

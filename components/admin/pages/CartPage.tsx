@@ -26,7 +26,9 @@ const CartPage = () => {
             {sellMockupData.map((item) => (
               <div
                 key={item.id}
-                onClick={() => router.push(`explore/${item.id}`)}
+                onClick={() => {
+                  return router.push(`explore/${item.id}`);
+                }}
               >
                 <Card className="rounded-none shadow-none">
                   <CardBody className="w-full bg-gray-100 flex flex-row gap-2 border-y">

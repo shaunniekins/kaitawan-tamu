@@ -27,16 +27,17 @@ const CartHeader = () => {
         <div className="w-full max-w-4xl flex justify-between items-center">
           <h1 className="font-bold text-xl ml-1">My Cart</h1>
           <Button
-                isIconOnly
-                variant="light"
-                disableAnimation
-                radius="sm"
-                className="p-0 m-0"
-                onClick={() => router.push("/ident/member/cart")}
-              >
-                <AiOutlineDelete size={30} />
-              </Button>
-         
+            isIconOnly
+            variant="light"
+            disableAnimation
+            radius="sm"
+            className="p-0 m-0"
+            onClick={() => {
+              return router.push("/ident/member/cart");
+            }}
+          >
+            <AiOutlineDelete size={30} />
+          </Button>
         </div>
       </header>
     </>

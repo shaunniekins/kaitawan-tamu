@@ -8,7 +8,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
-import { IoCartOutline, IoChatboxOutline, IoChevronBack } from "react-icons/io5";
+import {
+  IoCartOutline,
+  IoChatboxOutline,
+  IoChevronBack,
+} from "react-icons/io5";
 import { useRouter } from "next/navigation";
 
 const SellHeader = () => {
@@ -20,11 +24,14 @@ const SellHeader = () => {
     <>
       <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
         <div className="w-full max-w-4xl flex justify-between items-center">
-          <button onClick={() => router.push("/ident/member/explore")} 
-          className="p-0 ml-1 text-4xl text-gray-600"
-          // variant="light"
-          //  size="lg"
-           >
+          <button
+            onClick={() => {
+              return router.push("/ident/member/explore");
+            }}
+            className="p-0 ml-1 text-4xl text-gray-600"
+            // variant="light"
+            //  size="lg"
+          >
             <IoIosClose />
           </button>
           <h1 className="font-bold text-lg">List item</h1>
@@ -37,11 +44,10 @@ const SellHeader = () => {
                 disableAnimation
                 radius="sm"
                 className="p-0 m-0"
-                onClick={() => router.push("/ident/member/cart")} 
+                onClick={() => router.push("/ident/member/cart")}
               >
                 <IoCartOutline size={30} />
               </Button>
-              
             </div>
           </div>
         </div>

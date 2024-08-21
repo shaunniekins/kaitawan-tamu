@@ -48,7 +48,8 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
         />
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2"
-          onSubmit={handleSubmit}>
+          onSubmit={handleSubmit}
+        >
           <div className="flex flex-col rounded-md shadow-sm gap-3 mb-8">
             <Input
               type="text"
@@ -87,7 +88,8 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
                   type="button"
                   onClick={() =>
                     setIsInputUserPasswordVisible(!isInputUserPasswordVisible)
-                  }>
+                  }
+                >
                   {isInputUserPasswordVisible ? (
                     <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
                   ) : (
@@ -107,9 +109,10 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
           variant="ghost"
           color="primary"
           onClick={() => {
-            router.push(`/ident/${role}/signin`);
+            return router.push(`/ident/${role}/signin`);
           }}
-          className="mb-10">
+          className="mb-10"
+        >
           Already Logged in
         </Button>
       </div>

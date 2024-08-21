@@ -76,7 +76,9 @@ const BottomNavBarComponent = () => {
               className={`bottom-navtab-buttons ${
                 pathname === path ? "border-blue-700 bg-blue-50" : ""
               }`}
-              onClick={() => router.push(path)}
+              onClick={() => {
+                return router.push(path);
+              }}
             >
               <Icon
                 size={25}
