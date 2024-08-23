@@ -6,6 +6,8 @@ SELECT
     i.item_price,
     i.item_category,
     i.item_condition,
+    i.item_description,
+    i.item_status,
     i.created_at AS item_created_at,
     -- Extracting first_name, last_name, and email from raw_user_meta_data JSON field
     COALESCE(

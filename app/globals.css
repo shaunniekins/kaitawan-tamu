@@ -4,8 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* h-[100svh] */
 .box {
-    @apply min-h-[100svh] w-screen flex items-center font-body overflow-x-hidden
+    @apply min-h-[100svh] h-[100svh] w-screen flex items-center font-body overflow-x-hidden
 }
 
 .bottom-navtab-buttons {

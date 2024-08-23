@@ -6,6 +6,8 @@ SELECT
     i.item_price,
     i.item_category,
     i.item_condition,
+    i.item_description,
+    i.item_status,
     i.created_at AS item_created_at,
     s.id AS sold_id,
     s.buyer_id,

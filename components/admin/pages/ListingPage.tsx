@@ -110,7 +110,8 @@ const ListingPage = () => {
             <div className="w-full flex justify-between">
               <p className="font-semibold text-sm truncate">{item.item_name}</p>
             </div>
-            <h4 className="font-semibold text-medium">{item.item_price}</h4>
+            <h4 className="font-semibold text-medium">PHP{item.item_price}</h4>
+            <h6 className="text-sm">{item.item_status}</h6>
           </CardFooter>
         </Card>
       </div>

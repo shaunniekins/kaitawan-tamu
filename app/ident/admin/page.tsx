@@ -1,6 +1,6 @@
 // app/ident/admin/page.tsx:
 
-import AdminComponent from "@/components/admin/Dashboard";
+import AdminDashboardComponent from "@/components/admin/AdminDashboard";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -19,5 +19,5 @@ export default async function AdminSignin() {
     return redirect("/ident/member");
   }
 
-  return <AdminComponent />;
+  return <AdminDashboardComponent />;
 }

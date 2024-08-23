@@ -2,7 +2,7 @@
 
 "use client";
 
-import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
 import SellHeader from "../headers/SellHeader";
 import ImageSelector from "@/components/ImageSelector";
 import { useEffect, useState } from "react";
@@ -54,6 +54,7 @@ const SellPage = () => {
   const [newSelectedCondition, setNewSelectedCondition] = useState<string>("");
   const [newItemName, setNewItemName] = useState<string>("");
   const [newItemPrice, setNewItemPrice] = useState<number>(0);
+  const [newItemDescription, setNewItemDescription] = useState<string>("");
 
   const handleInsertItem = async (e: any) => {
     e.preventDefault();
@@ -63,6 +64,7 @@ const SellPage = () => {
       item_price: newItemPrice,
       item_category: newSelectedCategory,
       item_condition: newSelectedCondition,
+      item_description: newItemDescription,
       seller_id: user?.id,
     };
 
@@ -146,6 +148,13 @@ const SellPage = () => {
                     <span className="text-default-400 text-small">₱</span>
                   </div>
                 }
+              />
+              <Textarea
+                fullWidth
+                label="Description"
+                labelPlacement="outside"
+                placeholder="Describe your item"
+                onChange={(e) => setNewItemDescription(e.target.value)}
               />
             </div>
           </div>
