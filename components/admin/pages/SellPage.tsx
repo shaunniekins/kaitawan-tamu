@@ -2,7 +2,15 @@
 
 "use client";
 
-import { Button, Input, Select, SelectItem, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  SelectItem,
+  Textarea,
+} from "@nextui-org/react";
 import SellHeader from "../headers/SellHeader";
 import ImageSelector from "@/components/ImageSelector";
 import { useEffect, useState } from "react";
@@ -55,6 +63,8 @@ const SellPage = () => {
   const [newItemName, setNewItemName] = useState<string>("");
   const [newItemPrice, setNewItemPrice] = useState<number>(0);
   const [newItemDescription, setNewItemDescription] = useState<string>("");
+  const [newSelectedSellingType, setNewSelectedSellingType] =
+    useState<string>("sell");
 
   const handleInsertItem = async (e: any) => {
     e.preventDefault();
@@ -65,6 +75,7 @@ const SellPage = () => {
       item_category: newSelectedCategory,
       item_condition: newSelectedCondition,
       item_description: newItemDescription,
+      item_selling_type: newSelectedSellingType,
       seller_id: user?.id,
     };
 
@@ -102,6 +113,20 @@ const SellPage = () => {
                   1-5 images only. Drag and drop to reorder.
                 </p>
               </div>
+              <RadioGroup
+                label="Select Selling Type"
+                color="secondary"
+                value={newSelectedSellingType}
+                size="sm"
+                onValueChange={setNewSelectedSellingType}
+              >
+                <Radio value="sell" description="Sell your item directly">
+                  Sell
+                </Radio>
+                <Radio value="auction" description="Auction your item">
+                  Auction
+                </Radio>
+              </RadioGroup>
               <Select
                 fullWidth
                 label="Category"
@@ -174,7 +199,9 @@ const SellPage = () => {
               !newSelectedCategory ||
               !newSelectedCondition ||
               !newItemName ||
-              !newItemPrice
+              !newItemPrice ||
+              !newItemDescription ||
+              !newSelectedSellingType
             }
             onClick={handleInsertItem}
           >

@@ -8,6 +8,7 @@ create table
     item_condition character varying not null,
     item_description text null,
     item_status text not null default 'pending'::text,
+    item_selling_type text not null,
     created_at timestamp with time zone not null default now(),
     constraint ItemInventory_pkey primary key (id),
     constraint ItemInventory_seller_id_fkey foreign key (seller_id) references auth.users (id) on update cascade on delete cascade

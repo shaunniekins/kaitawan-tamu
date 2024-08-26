@@ -38,6 +38,9 @@ SELECT
     i.item_price AS selling_price,
     i.item_category,
     i.item_condition,
+    i.item_description,
+    i.item_status,
+    i.item_selling_type,
     i.created_at AS item_created_at
 FROM
     public."BiddingTransactions" b

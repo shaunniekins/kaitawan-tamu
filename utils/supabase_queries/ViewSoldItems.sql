@@ -8,6 +8,7 @@ SELECT
     i.item_condition,
     i.item_description,
     i.item_status,
+    i.item_selling_type,
     i.created_at AS item_created_at,
     s.id AS sold_id,
     s.buyer_id,
