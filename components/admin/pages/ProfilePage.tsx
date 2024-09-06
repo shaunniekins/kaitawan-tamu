@@ -2,14 +2,17 @@
 
 "use client";
 
+import { useUser } from "@/hooks/useUser";
 import { signOutMember } from "@/utils/supabase-functions/signOut";
 import { Avatar, Badge, Switch } from "@nextui-org/react";
 import { IoCamera } from "react-icons/io5";
 
 const ProfilePage = () => {
+  const user = useUser();
+
   return (
     <>
-      <header className="bg-gradient-to-b from-blue-500 to-purple-500 py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
+      <header className="bg-gradient-to-b from-green-500 to-[#008B47] py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
         <div className="w-full max-w-4xl flex justify-start items-center gap-3 h-24 pt-7 pb-1">
           <Badge
             showOutline={false}
@@ -25,9 +28,11 @@ const ProfilePage = () => {
           </Badge>
           <div className="flex flex-col">
             <h1 className="text-3xl font-semibold font-sans truncate">
-              Bruce Wayne
+              {`${user?.user_metadata?.first_name || ""} ${
+                user?.user_metadata?.last_name || ""
+              }`.trim() || "Loading..."}
             </h1>
-            <h2 className="text-xs truncate">bruce.wayne@example.com</h2>
+            <h2 className="text-xs truncate">{user?.email || "Loading..."}</h2>
           </div>
         </div>
       </header>

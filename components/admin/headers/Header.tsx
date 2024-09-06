@@ -20,7 +20,7 @@ const DefaultHeader = () => {
             href="/ident/member"
             className="flex items-center text-2xl font-bold mr-1">
             <Image
-              src="/images/logo.svg"
+              src="/images/asscat-logo.jpeg"
               alt="Kaitawan Tamu Logo"
               width={50}
               height={50}

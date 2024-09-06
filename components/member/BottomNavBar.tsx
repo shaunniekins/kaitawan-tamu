@@ -74,7 +74,7 @@ const BottomNavBarComponent = () => {
             <button
               key={name}
               className={`bottom-navtab-buttons ${
-                pathname === path ? "border-blue-700 bg-blue-50" : ""
+                pathname === path ? "border-[#008B47] bg-green-50" : ""
               }`}
               onClick={() => {
                 return router.push(path);
@@ -83,10 +83,10 @@ const BottomNavBarComponent = () => {
               <Icon
                 size={25}
                 className={`${
-                  name !== "Sell" && pathname === path ? "text-blue-700" : ""
-                } ${name === "Sell" && "bg-blue-500 text-white rounded-lg"}`}
+                  name !== "Sell" && pathname === path ? "text-[#008B47]" : ""
+                } ${name === "Sell" && "bg-[#008B47] text-white rounded-lg"}`}
               />
-              <span className={`${pathname === path ? "text-blue-700" : ""}`}>
+              <span className={`${pathname === path ? "text-[#008B47]" : ""}`}>
                 {name}
               </span>
             </button>

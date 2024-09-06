@@ -115,7 +115,7 @@ const SellPage = () => {
               </div>
               <RadioGroup
                 label="Select Selling Type"
-                color="secondary"
+                color="success"
                 value={newSelectedSellingType}
                 size="sm"
                 onValueChange={setNewSelectedSellingType}
@@ -191,9 +191,8 @@ const SellPage = () => {
           <Button
             variant="solid"
             radius="sm"
-            color="primary"
             fullWidth
-            className="text-white font-semibold"
+            className="bg-[#008B47] text-white font-semibold"
             isDisabled={
               !selectedImages.length ||
               !newSelectedCategory ||

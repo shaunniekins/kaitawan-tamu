@@ -133,7 +133,7 @@ const ListingPage = () => {
               <Tabs
                 aria-label="Dynamic tabs"
                 items={tabs}
-                color="primary"
+                color="success"
                 variant="underlined"
                 fullWidth
                 selectedKey={activeTab}

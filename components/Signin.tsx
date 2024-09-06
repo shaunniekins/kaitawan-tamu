@@ -33,14 +33,17 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
 
   return (
     <div className="w-full bg-white">
-      <div className="mx-5 md:container md:mx-auto md:px-[35rem] min-h-[100svh] h-[100svh] flex flex-col justify-around items-center">
-        <Image
-          src="/images/logo.svg"
-          alt="logo"
-          width={100}
-          height={100}
-          className="mt-16"
-        />
+      <div className="mx-5 lg:container lg:mx-auto 2xl:px-[35rem] min-h-[100svh] h-[100svh] flex flex-col justify-around items-center">
+        <div className="flex flex-col gap-3 text-[#008B47] font-semibold text-lg">
+          <Image
+            src="/images/asscat-logo.jpeg"
+            alt="logo"
+            width={130}
+            height={130}
+            className="mt-12"
+          />
+          <h6>Kaitawan Tamu</h6>
+        </div>
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2"
           onSubmit={handleSubmit}
@@ -51,7 +54,7 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
               label="Email"
               name="email"
               variant="bordered"
-              color="primary"
+              color="success"
               isRequired
             />
             <Input
@@ -59,7 +62,7 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
               label="Password"
               name="password"
               variant="bordered"
-              color="primary"
+              color="success"
               isRequired
               endContent={
                 <button
@@ -78,7 +81,13 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
               }
             />
 
-            <Button type="submit" color="primary" disabled={pending} size="lg">
+            <Button
+              type="submit"
+              color="success"
+              disabled={pending}
+              size="lg"
+              className="text-white"
+            >
               {signInPending ? "Signing In..." : "Sign In"}
             </Button>
           </div>
@@ -87,7 +96,7 @@ const SigninComponent: React.FC<SigninComponentProps> = ({ signIn, role }) => {
           type="submit"
           variant="ghost"
           isDisabled={role === "admin"}
-          color="primary"
+          color="success"
           onClick={() => {
             return router.push(`/ident/${role}/signup`);
           }}
