@@ -17,7 +17,7 @@ export default function TabContent() {
     case "/ident/member/explore":
       activeComponent = <ExplorePage />;
       break;
-    case "/ident/member/cart":
+    case "/ident/member/transaction":
       activeComponent = <CartPage />;
       break;
     case "/ident/member/sell":

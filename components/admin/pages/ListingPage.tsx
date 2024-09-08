@@ -21,7 +21,7 @@ import { createClient } from "@/utils/supabase/client";
 
 const ListingPage = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("active");
+  const [activeTab, setActiveTab] = useState("offer");
   const [user, setUser] = useState<User | null>(null);
   const [activeItems, setActiveItems] = useState<any[]>([]);
   const [soldItems, setSoldItems] = useState<any[]>([]);
@@ -80,7 +80,7 @@ const ListingPage = () => {
     memoizedFetchSoldListingData();
   }, [memoizedFetchActiveListingData, memoizedFetchSoldListingData]);
 
-  const filteredData = activeTab === "active" ? activeItems : soldItems;
+  const filteredData = activeTab === "offer" ? activeItems : soldItems;
 
   const renderItems = () => {
     if (filteredData.length === 0) {
@@ -95,7 +95,7 @@ const ListingPage = () => {
       <div
         key={item.id}
         onClick={() => {
-          return router.push(`explore/${item.id}`);
+          // return router.push(`explore/${item.id}`);
         }}
       >
         <Card className="rounded-md shadow-none">
@@ -119,7 +119,7 @@ const ListingPage = () => {
   };
 
   const tabs = [
-    { id: "active", label: "Active" },
+    { id: "offer", label: "Offer" },
     { id: "sold", label: "Sold" },
   ];
 

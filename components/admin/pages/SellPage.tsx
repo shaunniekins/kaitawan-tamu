@@ -44,7 +44,7 @@ const SellPage = () => {
   ];
 
   const conditionOptions = [
-    "Brand new",
+    // "Brand new",
     "Lightly used",
     "Moderately used",
     "Heavily used",

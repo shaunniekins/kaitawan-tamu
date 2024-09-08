@@ -35,7 +35,7 @@ export const updatePendingItemsInInventoryDataForAdmin = async (
     const response = await supabase
       .from("ItemInventory")
       .update({ item_status: updatedStatus })
-      .eq("id", item_id);
+      .eq("item_id", item_id);
 
     if (response.error) {
       throw response.error;
@@ -49,7 +49,10 @@ export const updatePendingItemsInInventoryDataForAdmin = async (
 
 // others
 
-export const fetchItemInventoryData = async (userId: string, tag?: string) => {
+export const fetchItemInventoryData = async (
+  userId: string,
+  tags?: string[]
+) => {
   try {
     let query = supabase
       .from("ViewActiveItems")
@@ -58,8 +61,8 @@ export const fetchItemInventoryData = async (userId: string, tag?: string) => {
       .eq("item_status", "approved")
       .order("item_created_at", { ascending: false });
 
-    if (tag) {
-      query = query.eq("item_category", tag);
+    if (tags && tags.length > 0) {
+      query = query.in("item_category", tags);
     }
 
     const response = await query;
@@ -80,6 +83,24 @@ export const fetchItemInventoryDataByItem = async (itemId: number) => {
       .from("ViewActiveItems")
       .select("*")
       .eq("item_id", itemId)
+      .order("item_created_at", { ascending: false });
+
+    if (response.error) {
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.error("Error fetching item inventory data:", error);
+    return null;
+  }
+};
+
+export const fetchItemsBasedOnId = async (itemIds: number[]) => {
+  try {
+    const response = await supabase
+      .from("ViewActiveItems")
+      .select("*")
+      .in("item_id", itemIds)
       .order("item_created_at", { ascending: false });
 
     if (response.error) {

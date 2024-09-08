@@ -27,7 +27,7 @@ const ProfilePage = () => {
             />
           </Badge>
           <div className="flex flex-col">
-            <h1 className="text-3xl font-semibold font-sans truncate">
+            <h1 className="text-3xl font-semibold font-sans truncate text-white">
               {`${user?.user_metadata?.first_name || ""} ${
                 user?.user_metadata?.last_name || ""
               }`.trim() || "Loading..."}

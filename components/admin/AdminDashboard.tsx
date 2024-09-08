@@ -57,6 +57,11 @@ const AdminDashboardComponent = () => {
     setCurrentTab(keyString);
   };
 
+  useEffect(() => {
+    setProductListingFilter("pending");
+    setUserStatusFilter("pending");
+  }, [currentTab]);
+
   // 2) Product Listings
   const memoizedFetchPendingItemsData = useCallback(async () => {
     try {
@@ -66,6 +71,7 @@ const AdminDashboardComponent = () => {
       if (response?.error) {
         console.error(response.error);
       } else {
+        console.log("");
         setPendingItems(response?.data ?? []);
       }
     } catch (error) {
@@ -75,7 +81,7 @@ const AdminDashboardComponent = () => {
 
   useEffect(() => {
     memoizedFetchPendingItemsData();
-  }, [memoizedFetchPendingItemsData]);
+  }, [memoizedFetchPendingItemsData, productListingFilter]);
 
   useEffect(() => {
     const channel = supabase
@@ -86,27 +92,43 @@ const AdminDashboardComponent = () => {
           event: "*",
           schema: "public",
           table: "ItemInventory",
-          // filter: `status=eq.${productListingFilter}`,
+          // filter: `item_status=eq.${productListingFilter}`,
         },
         (payload) => {
           if (payload.eventType === "INSERT") {
             setPendingItems((prev) => [...prev, payload.new]);
           } else if (payload.eventType === "UPDATE") {
             setPendingItems((prev) => {
-              return prev
-                .map((user) => {
-                  if (user.id === payload.new.id) {
-                    // Only update if the status matches productListingFilter
-                    if (payload.new.status === productListingFilter) {
+              const updatedItems = prev
+                .map((item) => {
+                  if (item.item_id === payload.new.item_id) {
+                    // If the item_status matches productListingFilter, update the item
+                    if (payload.new.item_status === productListingFilter) {
                       return payload.new;
                     }
-                    // If the status does not match, remove the item from the list
+                    // If the item_status does not match, remove the item from the list
                     return null;
                   }
-                  return user;
+                  return item;
                 })
-                .filter((user) => user !== null); // Remove null values from the array
+                .filter((item) => item !== null); // Remove null values from the array
+
+              // If the item_status matches productListingFilter and the item is not in the list, add it
+              if (
+                payload.new.item_status === productListingFilter &&
+                !updatedItems.some(
+                  (item) => item.item_id === payload.new.item_id
+                )
+              ) {
+                updatedItems.push(payload.new);
+              }
+
+              return updatedItems;
             });
+          } else if (payload.eventType === "DELETE") {
+            setPendingItems((prev) =>
+              prev.filter((item) => item.item_id !== payload.old.item_id)
+            );
           }
         }
       )
@@ -158,7 +180,7 @@ const AdminDashboardComponent = () => {
 
   useEffect(() => {
     memoizedFetchUsersData();
-  }, [memoizedFetchUsersData]);
+  }, [memoizedFetchUsersData, userStatusFilter]);
 
   useEffect(() => {
     const channel = supabase
@@ -176,10 +198,10 @@ const AdminDashboardComponent = () => {
             setPendingUsers((prev) => [...prev, payload.new]);
           } else if (payload.eventType === "UPDATE") {
             setPendingUsers((prev) => {
-              return prev
+              const updatedUsers = prev
                 .map((user) => {
-                  if (user.id === payload.new.id) {
-                    // Only update if the status matches userStatusFilter
+                  if (user.user_id === payload.new.user_id) {
+                    // If the status matches userStatusFilter, update the user
                     if (payload.new.status === userStatusFilter) {
                       return payload.new;
                     }
@@ -189,8 +211,25 @@ const AdminDashboardComponent = () => {
                   return user;
                 })
                 .filter((user) => user !== null); // Remove null values from the array
+
+              // If the status matches userStatusFilter and the user is not in the list, add them
+              if (
+                payload.new.status === userStatusFilter &&
+                !updatedUsers.some(
+                  (user) => user.user_id === payload.new.user_id
+                )
+              ) {
+                updatedUsers.push(payload.new);
+              }
+
+              return updatedUsers;
             });
-            // memoizedFetchUsersData();
+          } else if (payload.eventType === "DELETE") {
+            setPendingUsers((prev) => {
+              return prev.filter(
+                (user) => user.user_id !== payload.old.user_id
+              );
+            });
           }
         }
       )
@@ -224,15 +263,14 @@ const AdminDashboardComponent = () => {
       });
       await updateNewUser(userTableId, newStatus, data.user?.id);
     } else if (newStatus === "suspended") {
-      console.log("id: ", selectedUser.id);
-      await supabaseAdmin.auth.admin.updateUserById(selectedUser.user_id, {
+      await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
         user_metadata: {
           status: "suspended",
         },
       });
       await updateNewUser(userTableId, newStatus);
     } else if (newStatus === "reapproved") {
-      await supabaseAdmin.auth.admin.updateUserById(selectedUser.user_id, {
+      await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
         user_metadata: {
           status: "active",
         },
@@ -363,7 +401,8 @@ const AdminDashboardComponent = () => {
                   className={`${selectedUser.status !== "pending" && "hidden"}`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.id,
+                      selectedUser.user_id,
+
                       "rejected"
                     )
                   }
@@ -377,7 +416,7 @@ const AdminDashboardComponent = () => {
                   }`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.id,
+                      selectedUser.user_id,
                       "suspended"
                     )
                   }
@@ -390,7 +429,7 @@ const AdminDashboardComponent = () => {
                   className={`${selectedUser.status !== "pending" && "hidden"}`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.id,
+                      selectedUser.user_id,
                       "approved"
                     )
                   }
@@ -404,7 +443,7 @@ const AdminDashboardComponent = () => {
                   }`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.id,
+                      selectedUser.user_id,
                       "reapproved"
                     )
                   }
@@ -421,8 +460,8 @@ const AdminDashboardComponent = () => {
           <div>Signing out...</div>
         </div>
       ) : (
-        <div className="box h-full bg-yellow-100 flex-col">
-          <header className="bg-white p-4 w-full flex items-center justify-center shadow-sm">
+        <div className="box h-full flex-col relative">
+          <header className="p-4 w-full flex items-center justify-center shadow-sm">
             <div className="w-full max-w-4xl flex justify-between items-center">
               <Link
                 className="flex items-center text-2xl font-bold"
@@ -510,13 +549,13 @@ const AdminDashboardComponent = () => {
               </div>
             </div>
           </header>
-          <div className="h-full w-full p-4 flex">
+          <div className="h-full w-full p-4 flex mb-8">
             <div className="flex justify-center items-start w-full h-full">
-              <div className="max-w-4xl w-full h-full flex justify-center bg-purple-200">
+              <div className="max-w-4xl w-full h-full flex justify-center">
                 {currentTab === "dashboard" && <div>Dashboard</div>}
                 {currentTab === "products" && (
                   <>
-                    <div className="w-full flex justify-start flex-col bg-blue-200">
+                    <div className="w-full flex justify-start flex-col">
                       <div className="w-full flex justify-end">
                         <Select
                           label="Filter"
@@ -544,9 +583,9 @@ const AdminDashboardComponent = () => {
                           {pendingItems.map((item, index) => (
                             <Card
                               key={index}
-                              className="rounded-md shadow-none w-full bg-red-100"
+                              className="rounded-md shadow-none w-full"
                             >
-                              <CardBody className="w-full bg-blue-100">
+                              <CardBody className="w-full">
                                 <div className="p-0 w-full flex justify-between">
                                   <div className="flex gap-2 overflow-hidden">
                                     <img
@@ -637,7 +676,7 @@ const AdminDashboardComponent = () => {
 
                 {currentTab === "users" && (
                   <>
-                    <div className="w-full flex justify-start flex-col bg-blue-200">
+                    <div className="w-full flex justify-start flex-col">
                       <div className="w-full flex justify-end">
                         <Select
                           label="Status Filter"
@@ -665,9 +704,9 @@ const AdminDashboardComponent = () => {
                           {pendingUsers.map((user, index) => (
                             <Card
                               key={index}
-                              className="rounded-md shadow-none w-full bg-red-100"
+                              className="rounded-md shadow-none w-full"
                             >
-                              <CardBody className="w-full bg-blue-100">
+                              <CardBody className="w-full">
                                 <div className="p-0 w-full flex justify-between">
                                   <div className="flex gap-2 overflow-hidden">
                                     <img
@@ -759,10 +798,11 @@ const AdminDashboardComponent = () => {
               </div>
             </div>
           </div>
-          <div>
+          <div className="absolute bottom-10">
             {currentTab === "products" && (
               <Pagination
                 isCompact
+                color="success"
                 size="sm"
                 showControls
                 total={10}
@@ -770,7 +810,7 @@ const AdminDashboardComponent = () => {
               />
             )}
           </div>
-          <footer className="w-full mt-5 bg-green-100 text-center text-xs py-2">
+          <footer className="absolute bottom-0 w-full text-center text-xs py-2">
             All rights reserved to Kaitawan Tamu ({new Date().getFullYear()})
           </footer>
         </div>

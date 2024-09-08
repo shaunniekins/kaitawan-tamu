@@ -41,17 +41,17 @@ export const updateNewUser = async (
   authId?: string
 ) => {
   try {
-    const updates: { status: string; user_id?: string } = {
+    const updates: { status: string; auth_user_id?: string } = {
       status: updatedStatus,
     };
     if (authId) {
-      updates.user_id = authId;
+      updates.auth_user_id = authId;
     }
 
     const response = await supabase
       .from("Users")
       .update(updates)
-      .eq("id", userId);
+      .eq("user_id", userId);
 
     if (response.error) {
       throw response.error;
