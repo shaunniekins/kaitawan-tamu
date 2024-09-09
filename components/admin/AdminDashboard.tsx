@@ -462,7 +462,7 @@ const AdminDashboardComponent = () => {
       ) : (
         <div className="box h-full flex-col relative">
           <header className="p-4 w-full flex items-center justify-center shadow-sm">
-            <div className="w-full max-w-4xl flex justify-between items-center">
+            <div className="w-full max-w-6xl flex justify-between items-center">
               <Link
                 className="flex items-center text-2xl font-bold"
                 href="/ident/admin"
@@ -494,7 +494,7 @@ const AdminDashboardComponent = () => {
             </div>
           </header>
           <header className="bg-white p-4 w-full flex items-center justify-center shadow-sm">
-            <div className="w-full max-w-4xl flex justify-start">
+            <div className="w-full max-w-6xl flex justify-start">
               <div className="w-full md:w-auto">
                 <Tabs
                   aria-label="Tab Options"
@@ -551,7 +551,7 @@ const AdminDashboardComponent = () => {
           </header>
           <div className="h-full w-full p-4 flex mb-8">
             <div className="flex justify-center items-start w-full h-full">
-              <div className="max-w-4xl w-full h-full flex justify-center">
+              <div className="max-w-6xl w-full h-full flex justify-center">
                 {currentTab === "dashboard" && <div>Dashboard</div>}
                 {currentTab === "products" && (
                   <>

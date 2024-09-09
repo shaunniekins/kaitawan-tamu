@@ -78,8 +78,35 @@ const BottomNavBarComponent = () => {
           <Spinner color="success" />
         </div>
       )}
-      <div className="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
+      {/* web */}
+      <div className="hidden h-10 lg:block fixed inset-x-0 top-0 z-50 bg-white shadow-lg lg:shadow-none">
+        <div className="max-w-6xl mx-auto w-full flex justify-center items-center">
+          <div className="w-full max-w-md ml-auto flex justify-center items-center">
+            {navigationItems.map(({ path, name }) => (
+              <button
+                key={name}
+                className={`bottom-navtab-buttons ${
+                  pathname === path ? "border-[#008B47] bg-green-50" : ""
+                }`}
+                onClick={() => {
+                  if (pathname.includes(path)) return;
+                  setIsLoading(true);
+                  return router.push(path);
+                }}
+              >
+                <span
+                  className={`${pathname === path ? "text-[#008B47]" : ""}`}
+                >
+                  {name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* mobile */}
+      <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
           {navigationItems.map(({ path, name, Icon }) => (
             <button
               key={name}

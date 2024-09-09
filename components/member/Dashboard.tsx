@@ -17,13 +17,13 @@ import {
 } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { signOutMember } from "@/utils/supabase-functions/signOut";
-import ExplorePage from "../admin/pages/ExplorePage";
-import ProfilePage from "../admin/pages/ProfilePage";
-import CartPage from "../admin/pages/CartPage";
-import SellPage from "../admin/pages/SellPage";
-import ExploreHeader from "../admin/headers/ExploreHeader";
-import DefaultHeader from "../admin/headers/Header";
-import ListingPage from "../admin/pages/ListingPage";
+import ExplorePage from "./pages/ExplorePage";
+import ProfilePage from "./pages/ProfilePage";
+import CartPage from "./pages/CartPage";
+import SellPage from "./pages/SellPage";
+import ExploreHeader from "./headers/ExploreHeader";
+import DefaultHeader from "./headers/Header";
+import ListingPage from "./pages/ListingPage";
 
 const navigationItems = [
   { name: "Explore", icon: MdOutlineSearch, component: ExplorePage },

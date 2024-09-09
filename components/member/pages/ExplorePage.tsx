@@ -94,7 +94,7 @@ const ExplorePage = () => {
         </div> */}
         {!isLoading && (
           <>
-            <div className="w-full flex overflow-x-auto md:mt-2 mb-2 gap-2 custom-scrollbar">
+            <div className="w-full flex overflow-x-auto lg:mt-10 mb-2 gap-2 custom-scrollbar">
               {tags.map((tag) => (
                 <Chip
                   key={tag}

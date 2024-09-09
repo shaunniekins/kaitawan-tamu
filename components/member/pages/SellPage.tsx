@@ -187,7 +187,7 @@ const SellPage = () => {
       </div>
       {/* footer */}
       <div className="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
-        <div className="max-w-4xl mx-auto flex p-2">
+        <div className="max-w-6xl mx-auto flex p-2">
           <Button
             variant="solid"
             radius="sm"

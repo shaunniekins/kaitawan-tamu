@@ -1,4 +1,4 @@
-// components/admin/headers/ExploreItemHeader.tsx
+// components/admin/headers/Header.tsx
 
 "use client";
 
@@ -6,44 +6,32 @@ import { SearchIcon } from "@/public/icons/SearchIcon";
 import { Button, Input } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
-import { FC, useState } from "react";
-import { IoIosNotificationsOutline } from "react-icons/io";
-import { IoIosHeartEmpty } from "react-icons/io";
-import {
-  IoCartOutline,
-  IoChatboxOutline,
-  IoChevronBack,
-} from "react-icons/io5";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-interface ExploreItemHeaderProps {
-  setIsLoading: (isLoading: boolean) => void;
-}
-
-const ExploreItemHeader: FC<ExploreItemHeaderProps> = ({ setIsLoading }) => {
+const DefaultHeader = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const router = useRouter();
 
   return (
     <>
       <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
-        <div className="w-full max-w-4xl flex justify-between items-center">
-          <button
-            onClick={() => {
-              setIsLoading(true);
-              router.back();
-            }}
-            className="p-0 ml-1 mr-2 text-2xl text-gray-600"
-            // variant="light"
-            //  size="lg"
-          >
-            <IoChevronBack />
-          </button>
+        <div className="w-full max-w-6xl flex justify-between items-center">
+          <Link
+            href="/ident/member"
+            className="flex items-center text-2xl font-bold mr-1">
+            <Image
+              src="/images/asscat-logo.jpeg"
+              alt="Kaitawan Tamu Logo"
+              width={50}
+              height={50}
+              className="rounded-full"
+            />
+          </Link>
           <Input
             isClearable
             onClear={() => setSearchValue("")}
             radius="lg"
+            className="invisible"
             classNames={{
               label: "text-black/50 dark:text-white/90",
               input: [
@@ -76,18 +64,22 @@ const ExploreItemHeader: FC<ExploreItemHeaderProps> = ({ setIsLoading }) => {
           />
 
           <div className="flex flex-col justify-end items-end">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-4">
               <Button
                 isIconOnly
                 variant="light"
                 disableAnimation
                 radius="sm"
-                className="p-0 m-0"
-                onClick={() => {
-                  return router.push("/ident/member/cart");
-                }}
-              >
-                <IoIosHeartEmpty size={30} />
+                className="p-0 m-0 invisible"
+                onClick={() => {}}>
+                {/* <MdOutlineAssistant size={30} /> */}
+                <Image
+                  src="/images/virtual-assistant.png"
+                  alt="Virtual Assistant Icon"
+                  width={50}
+                  height={50}
+                  className="rounded-full"
+                />
               </Button>
             </div>
           </div>
@@ -97,4 +89,4 @@ const ExploreItemHeader: FC<ExploreItemHeaderProps> = ({ setIsLoading }) => {
   );
 };
 
-export default ExploreItemHeader;
+export default DefaultHeader;

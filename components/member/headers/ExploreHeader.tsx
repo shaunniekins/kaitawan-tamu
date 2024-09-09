@@ -16,11 +16,11 @@ const ExploreHeader = () => {
 
   return (
     <>
-      <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
-        <div className="w-full max-w-4xl flex justify-between items-center">
-          {/* <Link
-            href="/ident/member"
-            className="flex items-center text-2xl font-bold mr-1">
+      <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md lg:shadow-none fixed inset-x-0 top-0 lg:top-10 z-50">
+        <div className="w-full max-w-6xl flex justify-between items-center">
+          <Link
+            href="/ident/member/explore"
+            className="flex items-center text-2xl font-bold mr-2 lg:mr-3">
             <Image
               src="/images/asscat-logo.jpeg"
               alt="Kaitawan Tamu Logo"
@@ -28,7 +28,8 @@ const ExploreHeader = () => {
               height={50}
               className="rounded-full"
             />
-          </Link> */}
+            {/* <span className="text-lg hidden lg:block">Kaitawan Tamu</span> */}
+          </Link>
           <Input
             isClearable
             onClear={() => setSearchValue("")}

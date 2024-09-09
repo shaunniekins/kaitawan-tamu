@@ -1,11 +1,11 @@
 // app/ident/member/[tab]/TabContent.tsx
 "use client";
 
-import CartPage from "@/components/admin/pages/CartPage";
-import ExplorePage from "@/components/admin/pages/ExplorePage";
-import ListingPage from "@/components/admin/pages/ListingPage";
-import ProfilePage from "@/components/admin/pages/ProfilePage";
-import SellPage from "@/components/admin/pages/SellPage";
+import CartPage from "@/components/member/pages/CartPage";
+import ExplorePage from "@/components/member/pages/ExplorePage";
+import ListingPage from "@/components/member/pages/ListingPage";
+import ProfilePage from "@/components/member/pages/ProfilePage";
+import SellPage from "@/components/member/pages/SellPage";
 import { usePathname } from "next/navigation";
 
 export default function TabContent() {

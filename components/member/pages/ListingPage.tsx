@@ -129,7 +129,7 @@ const ListingPage = () => {
       <div className="main-container justify-start">
         <div className="product-details-container overflow-x-hidden">
           <div className="w-full flex-col px-2">
-            <div className="w-full flex flex-col mt-3">
+            <div className="w-full flex flex-col mt-3 lg:mt-14">
               <Tabs
                 aria-label="Dynamic tabs"
                 items={tabs}

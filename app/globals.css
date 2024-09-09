@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* web: very top: h-10 */
+/* header: top-0 lg:top-10 */
+/* content: lg:mt-10 */
+
 /* bg-[#008B47] */
 /* h-[100svh] */
 .box {
@@ -16,7 +20,7 @@
 
 /* w-full */
 .main-container {
-  @apply max-w-4xl w-screen h-full flex items-start flex-col overflow-x-hidden overflow-y-auto;
+  @apply max-w-6xl w-screen h-full flex items-start flex-col overflow-x-hidden overflow-y-auto;
 }
 
 .product-details-container {

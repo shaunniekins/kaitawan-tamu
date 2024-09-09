@@ -23,8 +23,8 @@ const CartHeader = () => {
 
   return (
     <>
-      <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 z-50">
-        <div className="w-full max-w-4xl flex justify-between items-center">
+      <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 lg:top-10 z-50">
+        <div className="w-full max-w-6xl flex justify-between items-center">
           <h1 className="font-bold text-xl ml-1">Transactions</h1>
           <Button
             isIconOnly

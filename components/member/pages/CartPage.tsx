@@ -288,7 +288,7 @@ const CartPage = () => {
           </div>
         )}
         {!isLoading && (
-          <div className="product-details-container overflow-x-hidden mt-8">
+          <div className="product-details-container overflow-x-hidden mt-6 md:mt-16">
             <div className="w-full col-span-full flex flex-col justify-center items-start gap-2 h-full">
               {items.length !== 0 && (
                 <>

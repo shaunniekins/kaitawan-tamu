@@ -1,7 +1,7 @@
 // app/ident/member/[tab]/[id]/page.tsx
 
 import { sellMockupData } from "@/app/api/sell";
-import ExploreItem from "@/components/admin/pages/ExploreItem";
+import ExploreItem from "@/components/member/pages/ExploreItem";
 
 interface Params {
   tab: string;

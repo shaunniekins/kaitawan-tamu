@@ -1,8 +1,8 @@
 "use client";
 
 import React, { ReactNode, useState } from "react";
-import DefaultHeader from "../admin/headers/Header";
-import ExploreHeader from "../admin/headers/ExploreHeader";
+import DefaultHeader from "./headers/Header";
+import ExploreHeader from "./headers/ExploreHeader";
 import BottomNavBarComponent from "./BottomNavBar";
 
 interface NavigationProps {

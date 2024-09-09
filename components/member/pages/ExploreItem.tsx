@@ -602,7 +602,7 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
       {/* footer */}
       {!isLoading && (
         <div className="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
-          <div className="max-w-4xl mx-auto flex justify-around items-center gap-5 px-2 border-t-3 py-1">
+          <div className="max-w-6xl mx-auto flex justify-around items-center gap-5 px-2 border-t-3 py-1">
             <div className="flex flex-col items-center">
               <Avatar
                 src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
