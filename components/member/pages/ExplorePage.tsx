@@ -98,7 +98,7 @@ const ExplorePage = () => {
               {tags.map((tag) => (
                 <Chip
                   key={tag}
-                  color={selectedTags.includes(tag) ? "primary" : "default"}
+                  color={selectedTags.includes(tag) ? "success" : "default"}
                   className="cursor-pointer"
                   onClick={() => toggleTagSelection(tag)}
                 >

@@ -18,6 +18,7 @@ import {
 } from "@/app/api/listingsData";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
+import ExploreHeader from "../headers/ExploreHeader";
 
 const ListingPage = () => {
   const router = useRouter();
@@ -125,7 +126,12 @@ const ListingPage = () => {
 
   return (
     <>
-      <ListingHeader />
+      <div className="lg:hidden">
+        <ListingHeader />
+      </div>
+      <div className="hidden lg:block">
+        <ExploreHeader />
+      </div>
       <div className="main-container justify-start">
         <div className="product-details-container overflow-x-hidden">
           <div className="w-full flex-col px-2">

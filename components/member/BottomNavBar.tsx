@@ -11,7 +11,7 @@ import {
 
 import { GrTransaction } from "react-icons/gr";
 import { Spinner } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface NavigationItem {
   path: string;
@@ -47,27 +47,41 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
+// Function to check if the current pathname matches any base path with an additional segment
+const shouldHideBottomBar = (pathname: string, isLargeScreen: boolean) => {
+  // Directly return true if the current pathname is exactly "/ident/member/sell" and screen size is less than lg
+  if (pathname === "/ident/member/sell" && !isLargeScreen) {
+    return true;
+  }
+
+  // Check if pathname matches "/basepath/anySegment"
+  return navigationItems.some(({ path }) => {
+    const regex = new RegExp(`^${path}/[^/]+$`);
+    return regex.test(pathname);
+  });
+};
+
 const BottomNavBarComponent = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
-  // Function to check if the current pathname matches any base path with an additional segment
-  const shouldHideBottomBar = () => {
-    // Directly return true if the current pathname is exactly "/ident/member/sell"
-    if (pathname === "/ident/member/sell") {
-      return true;
-    }
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024); // Tailwind's lg breakpoint is 1024px
+    };
 
-    // Check if pathname matches "/basepath/anySegment"
-    return navigationItems.some(({ path }) => {
-      const regex = new RegExp(`^${path}/[^/]+$`);
-      return regex.test(pathname);
-    });
-  };
+    handleResize(); // Check initial screen size
+    window.addEventListener("resize", handleResize);
 
-  // Hide the component if the current route matches the specified pattern
-  if (shouldHideBottomBar()) {
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // Hide the component if the current route matches the specified pattern and screen size is less than lg
+  if (shouldHideBottomBar(pathname, isLargeScreen)) {
     return null;
   }
 
@@ -112,7 +126,7 @@ const BottomNavBarComponent = () => {
               key={name}
               className={`bottom-navtab-buttons ${
                 pathname === path ? "border-[#008B47] bg-green-50" : ""
-              }`}
+              } ${path === "/ident/member/sell" ? "hidden lg:flex" : ""}`}
               onClick={() => {
                 if (pathname.includes(path)) return;
                 setIsLoading(true);

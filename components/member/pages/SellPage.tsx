@@ -18,6 +18,7 @@ import { insertItemInventoryData } from "@/app/api/itemInventoryData";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import ExploreHeader from "../headers/ExploreHeader";
 
 const SellPage = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -96,11 +97,16 @@ const SellPage = () => {
 
   return (
     <>
-      <SellHeader />
+      <div className="lg:hidden">
+        <SellHeader />
+      </div>
+      <div className="hidden lg:block">
+        <ExploreHeader />
+      </div>
       <div className="main-container justify-start">
         <div className="product-details-container overflow-x-hidden">
           <div className="w-full flex-col px-2">
-            <div className="w-full flex flex-col gap-6 py-3 mt-3">
+            <div className="w-full flex flex-col gap-6 py-3 lg:py-2 mt-3 lg:mt-14">
               <div>
                 <ImageSelector
                   isDisabled={false}
@@ -118,6 +124,7 @@ const SellPage = () => {
                 color="success"
                 value={newSelectedSellingType}
                 size="sm"
+                // orientation="horizontal"
                 onValueChange={setNewSelectedSellingType}
               >
                 <Radio value="sell" description="Sell your item directly">
@@ -127,53 +134,57 @@ const SellPage = () => {
                   Auction
                 </Radio>
               </RadioGroup>
-              <Select
-                fullWidth
-                label="Category"
-                size="md"
-                className="w-full"
-                labelPlacement="outside"
-                placeholder="Select a category"
-                onChange={(e) => setNewSelectedCategory(e.target.value)}
-              >
-                {categoryOptions.map((category) => (
-                  <SelectItem key={category}>{category}</SelectItem>
-                ))}
-              </Select>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Select
+                  fullWidth
+                  label="Category"
+                  size="md"
+                  className="w-full"
+                  labelPlacement="outside"
+                  placeholder="Select a category"
+                  onChange={(e) => setNewSelectedCategory(e.target.value)}
+                >
+                  {categoryOptions.map((category) => (
+                    <SelectItem key={category}>{category}</SelectItem>
+                  ))}
+                </Select>
 
-              <Select
-                fullWidth
-                label="Condition"
-                size="md"
-                labelPlacement="outside"
-                placeholder="Select item condition"
-                onChange={(e) => setNewSelectedCondition(e.target.value)}
-              >
-                {conditionOptions.map((condition) => (
-                  <SelectItem key={condition}>{condition}</SelectItem>
-                ))}
-              </Select>
-              <Input
-                fullWidth
-                type="text"
-                label="Item Name"
-                labelPlacement="outside"
-                placeholder="Input item name"
-                onChange={(e) => setNewItemName(e.target.value)}
-              />
-              <Input
-                fullWidth
-                type="number"
-                label="Item Price"
-                labelPlacement="outside"
-                placeholder="0.00"
-                onChange={(e) => setNewItemPrice(Number(e.target.value))}
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 text-small">₱</span>
-                  </div>
-                }
-              />
+                <Select
+                  fullWidth
+                  label="Condition"
+                  size="md"
+                  labelPlacement="outside"
+                  placeholder="Select item condition"
+                  onChange={(e) => setNewSelectedCondition(e.target.value)}
+                >
+                  {conditionOptions.map((condition) => (
+                    <SelectItem key={condition}>{condition}</SelectItem>
+                  ))}
+                </Select>
+
+                <Input
+                  fullWidth
+                  type="text"
+                  label="Item Name"
+                  labelPlacement="outside"
+                  placeholder="Input item name"
+                  onChange={(e) => setNewItemName(e.target.value)}
+                />
+                <Input
+                  fullWidth
+                  type="number"
+                  label="Item Price"
+                  labelPlacement="outside"
+                  placeholder="0.00"
+                  onChange={(e) => setNewItemPrice(Number(e.target.value))}
+                  startContent={
+                    <div className="pointer-events-none flex items-center">
+                      <span className="text-default-400 text-small">₱</span>
+                    </div>
+                  }
+                />
+              </div>
+
               <Textarea
                 fullWidth
                 label="Description"
@@ -181,12 +192,29 @@ const SellPage = () => {
                 placeholder="Describe your item"
                 onChange={(e) => setNewItemDescription(e.target.value)}
               />
+              <Button
+                variant="solid"
+                radius="sm"
+                className="w-full lg:w-32 hidden lg:block bg-[#008B47] text-white lg:self-center"
+                isDisabled={
+                  !selectedImages.length ||
+                  !newSelectedCategory ||
+                  !newSelectedCondition ||
+                  !newItemName ||
+                  !newItemPrice ||
+                  !newItemDescription ||
+                  !newSelectedSellingType
+                }
+                onClick={handleInsertItem}
+              >
+                List it
+              </Button>
             </div>
           </div>
         </div>
       </div>
       {/* footer */}
-      <div className="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
+      <div className="fixed lg:hidden inset-x-0 bottom-0 z-50 bg-white shadow-lg">
         <div className="max-w-6xl mx-auto flex p-2">
           <Button
             variant="solid"

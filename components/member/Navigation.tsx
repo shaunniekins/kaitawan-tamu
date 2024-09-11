@@ -11,13 +11,16 @@ interface NavigationProps {
 
 const Navigation = ({ children }: NavigationProps) => {
   return (
-    <section className="box flex-col">
+    <section className="box flex-col relative">
       {/* <DefaultHeader /> */}
       {/* <ExploreHeader /> */}
       <div className="h-full w-full mt-12 mb-16 md:flex md:flex-col md:justify-center md:items-center">
         {children}
         <BottomNavBarComponent />
       </div>
+      <footer className="hidden lg:block absolute bottom-0 w-full text-center text-xs py-2 bg-green-800 text-white">
+        All rights reserved to Kaitawan Tamu ({new Date().getFullYear()})
+      </footer>
     </section>
   );
 };

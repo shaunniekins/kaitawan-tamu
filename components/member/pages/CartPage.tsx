@@ -24,6 +24,7 @@ import {
   fetchInProgressPurchasesByUser,
   insertInProgressPurchaseData,
 } from "@/app/api/inProgressPurchasesData";
+import ExploreHeader from "../headers/ExploreHeader";
 
 const CartPage = () => {
   const router = useRouter();
@@ -280,7 +281,12 @@ const CartPage = () => {
 
   return (
     <>
-      <CartHeader />
+      <div className="lg:hidden">
+        <CartHeader />
+      </div>
+      <div className="hidden lg:block">
+        <ExploreHeader />
+      </div>
       <div className="main-container justify-start">
         {isLoading && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -299,7 +305,7 @@ const CartPage = () => {
                       and will stop receiving bids
                     </h6>
                   </div>
-                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     {items.map((item) => (
                       <div
                         key={item.bid_id}
@@ -394,7 +400,7 @@ const CartPage = () => {
                       *Note: This is your current pending transactions
                     </h6>
                   </div>
-                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {purchases.map((item) => (
                       <div
                         key={item.bid_id}
