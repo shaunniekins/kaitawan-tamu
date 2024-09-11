@@ -92,7 +92,7 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
     formData.delete("password");
 
     setSignUpPending(false);
-    router.push("/ident/member/signin");
+    router.push("/ident/member/confirmation");
   };
 
   return (

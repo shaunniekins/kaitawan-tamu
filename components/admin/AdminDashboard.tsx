@@ -254,14 +254,55 @@ const AdminDashboardComponent = () => {
         password: selectedUser.password,
         email_confirm: true,
         user_metadata: {
+          email: selectedUser.email,
+          id_number: selectedUser.school_id_number,
           first_name: selectedUser.first_name,
           last_name: selectedUser.last_name,
           password: selectedUser.password,
+          year_level: selectedUser.year_level,
           role: "member",
           status: "active",
         },
       });
       await updateNewUser(userTableId, newStatus, data.user?.id);
+
+      const email = selectedUser.email;
+      const recipient_name = `${selectedUser.first_name} ${selectedUser.last_name}`;
+      const subject = "Account Approved";
+      const message = `
+Greetings!
+
+We are pleased to inform you that your account associated with the email ${email} has been approved. You can now sign in and access your account.
+
+Thank you!
+
+Best regards,
+Kaitawan Tamu Team`;
+
+      try {
+        const response = await fetch("/api/send-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, recipient_name, subject, message }),
+        });
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (error) {
+          data = null;
+        }
+
+        if (response.ok) {
+          console.log("Email sent successfully!");
+        } else {
+          console.log(
+            `Failed to send email: ${data?.error || "Unknown error"}`
+          );
+        }
+      } catch (error) {
+        console.error("Error sending email:", error);
+      }
     } else if (newStatus === "suspended") {
       await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
         user_metadata: {

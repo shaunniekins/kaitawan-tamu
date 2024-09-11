@@ -9,6 +9,7 @@ import {
   CardBody,
   CardFooter,
   Avatar,
+  Spinner,
 } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -26,6 +27,8 @@ const ListingPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [activeItems, setActiveItems] = useState<any[]>([]);
   const [soldItems, setSoldItems] = useState<any[]>([]);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const supabase = createClient();
 
@@ -70,6 +73,7 @@ const ListingPage = () => {
         console.error(response.error);
       } else {
         setSoldItems(response?.data ?? []);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -132,34 +136,41 @@ const ListingPage = () => {
       <div className="hidden lg:block">
         <ExploreHeader />
       </div>
-      <div className="main-container justify-start">
-        <div className="product-details-container overflow-x-hidden">
-          <div className="w-full flex-col px-2">
-            <div className="w-full flex flex-col mt-3 lg:mt-14">
-              <Tabs
-                aria-label="Dynamic tabs"
-                items={tabs}
-                color="success"
-                variant="underlined"
-                fullWidth
-                selectedKey={activeTab}
-                radius="none"
-                onSelectionChange={(key) => setActiveTab(key.toString())}
-              >
-                {(item) => (
-                  <Tab key={item.id} title={item.label}>
-                    <Card className="rounded-none bg-none shadow-none">
-                      <CardBody className="w-full grid grid-cols-2 md:grid-cols-5 gap-3 p-0">
-                        {renderItems()}
-                      </CardBody>
-                    </Card>
-                  </Tab>
-                )}
-              </Tabs>
+      {isLoading && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <Spinner color="success" />
+        </div>
+      )}
+      {!isLoading && (
+        <div className="main-container justify-start">
+          <div className="product-details-container overflow-x-hidden">
+            <div className="w-full flex-col px-2">
+              <div className="w-full flex flex-col mt-3 lg:mt-14">
+                <Tabs
+                  aria-label="Dynamic tabs"
+                  items={tabs}
+                  color="success"
+                  variant="underlined"
+                  fullWidth
+                  selectedKey={activeTab}
+                  radius="none"
+                  onSelectionChange={(key) => setActiveTab(key.toString())}
+                >
+                  {(item) => (
+                    <Tab key={item.id} title={item.label}>
+                      <Card className="rounded-none bg-none shadow-none">
+                        <CardBody className="w-full grid grid-cols-2 md:grid-cols-5 gap-3 p-0">
+                          {renderItems()}
+                        </CardBody>
+                      </Card>
+                    </Tab>
+                  )}
+                </Tabs>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
