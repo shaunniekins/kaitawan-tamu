@@ -4,8 +4,10 @@ create table
     item_id bigint null,
     buyer_id uuid not null,
     final_price bigint not null,
+    item_selling_type text not null,
     progress_status text not null,
     created_at timestamp with time zone not null default now(),
+    last_accessed_at timestamp with time zone not null default now(),
     constraint InProgressPurchases_pkey primary key (in_progress_id),
     constraint InProgressPurchases_buyer_id_fkey foreign key (buyer_id) references auth.users (id) on update cascade on delete cascade,
     constraint InProgressPurchases_item_id_fkey foreign key (item_id) references "ItemInventory" (item_id) on update cascade on delete cascade

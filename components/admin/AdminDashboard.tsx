@@ -16,6 +16,7 @@ import {
   Pagination,
   Select,
   SelectItem,
+  Spinner,
   Tab,
   Tabs,
 } from "@nextui-org/react";
@@ -25,13 +26,12 @@ import { MdOutlineLogout } from "react-icons/md";
 import { Key, useCallback, useEffect, useState } from "react";
 import { signOutAdmin } from "@/utils/supabase-functions/signOut";
 import { RxBox, RxDashboard, RxGear, RxPerson } from "react-icons/rx";
-import {
-  fetchPendingItemsInInventoryDataForAdmin,
-  updatePendingItemsInInventoryDataForAdmin,
-} from "@/app/api/itemInventoryData";
-import { fetchUsersDataForAdmin, updateNewUser } from "@/app/api/usersData";
+import { updatePendingItemsInInventoryDataForAdmin } from "@/app/api/itemInventoryIUD";
+import { updateNewUser } from "@/app/api/usersIUD";
 import { createClient } from "@/utils/supabase/client";
 import { supabaseAdmin } from "@/utils/supabase/supabaseDb";
+import useUsers from "@/hooks/useUsers";
+import useActiveItems from "@/hooks/useActiveItems";
 
 const AdminDashboardComponent = () => {
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
@@ -47,8 +47,6 @@ const AdminDashboardComponent = () => {
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [userStatusFilter, setUserStatusFilter] = useState("pending");
 
-  const supabase = createClient();
-
   const handleSelectionChange = (key: Key) => {
     const keyString = key.toString();
     if (keyString !== currentTab) {
@@ -63,85 +61,12 @@ const AdminDashboardComponent = () => {
   }, [currentTab]);
 
   // 2) Product Listings
-  const memoizedFetchPendingItemsData = useCallback(async () => {
-    try {
-      const response = await fetchPendingItemsInInventoryDataForAdmin(
-        productListingFilter
-      );
-      if (response?.error) {
-        console.error(response.error);
-      } else {
-        console.log("");
-        setPendingItems(response?.data ?? []);
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  }, [setPendingItems, productListingFilter]);
+  const { activeItems, loadingActiveItems, errorActiveItems } =
+    useActiveItems(productListingFilter);
 
   useEffect(() => {
-    memoizedFetchPendingItemsData();
-  }, [memoizedFetchPendingItemsData, productListingFilter]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("chat_sessions_item_inventory")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "ItemInventory",
-          // filter: `item_status=eq.${productListingFilter}`,
-        },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            setPendingItems((prev) => [...prev, payload.new]);
-          } else if (payload.eventType === "UPDATE") {
-            setPendingItems((prev) => {
-              const updatedItems = prev
-                .map((item) => {
-                  if (item.item_id === payload.new.item_id) {
-                    // If the item_status matches productListingFilter, update the item
-                    if (payload.new.item_status === productListingFilter) {
-                      return payload.new;
-                    }
-                    // If the item_status does not match, remove the item from the list
-                    return null;
-                  }
-                  return item;
-                })
-                .filter((item) => item !== null); // Remove null values from the array
-
-              // If the item_status matches productListingFilter and the item is not in the list, add it
-              if (
-                payload.new.item_status === productListingFilter &&
-                !updatedItems.some(
-                  (item) => item.item_id === payload.new.item_id
-                )
-              ) {
-                updatedItems.push(payload.new);
-              }
-
-              return updatedItems;
-            });
-          } else if (payload.eventType === "DELETE") {
-            setPendingItems((prev) =>
-              prev.filter((item) => item.item_id !== payload.old.item_id)
-            );
-          }
-        }
-      )
-      .subscribe((status) => {
-        if (status !== "SUBSCRIBED") {
-          console.error("Error subscribing to channel:", status);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [productListingFilter, setPendingItems]);
+    setPendingItems(activeItems);
+  }, [activeItems]);
 
   useEffect(() => {
     if (!openSpecificItemModal) {
@@ -155,94 +80,12 @@ const AdminDashboardComponent = () => {
     setSelectedItem(null);
   };
 
-  // useEffect(() => {
-  //   if (productListingFilter === "" || productListingFilter === null)
-  //     setProductListingFilter("pending");
-  // }, [productListingFilter, setProductListingFilter]);
-
-  // useEffect(() => {
-  //   console.log("filter: ", productListingFilter);
-  // }, [productListingFilter]);
-
   // 3) Users
-  const memoizedFetchUsersData = useCallback(async () => {
-    try {
-      const response = await fetchUsersDataForAdmin(userStatusFilter);
-      if (response?.error) {
-        console.error(response.error);
-      } else {
-        setPendingUsers(response?.data ?? []);
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  }, [setPendingUsers, userStatusFilter]);
+  const { users, loadingUsers, errorUsers } = useUsers(userStatusFilter);
 
   useEffect(() => {
-    memoizedFetchUsersData();
-  }, [memoizedFetchUsersData, userStatusFilter]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("chat_sessions_users")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "Users",
-          // filter: `status=eq.${userStatusFilter}`,
-        },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            setPendingUsers((prev) => [...prev, payload.new]);
-          } else if (payload.eventType === "UPDATE") {
-            setPendingUsers((prev) => {
-              const updatedUsers = prev
-                .map((user) => {
-                  if (user.user_id === payload.new.user_id) {
-                    // If the status matches userStatusFilter, update the user
-                    if (payload.new.status === userStatusFilter) {
-                      return payload.new;
-                    }
-                    // If the status does not match, remove the user from the list
-                    return null;
-                  }
-                  return user;
-                })
-                .filter((user) => user !== null); // Remove null values from the array
-
-              // If the status matches userStatusFilter and the user is not in the list, add them
-              if (
-                payload.new.status === userStatusFilter &&
-                !updatedUsers.some(
-                  (user) => user.user_id === payload.new.user_id
-                )
-              ) {
-                updatedUsers.push(payload.new);
-              }
-
-              return updatedUsers;
-            });
-          } else if (payload.eventType === "DELETE") {
-            setPendingUsers((prev) => {
-              return prev.filter(
-                (user) => user.user_id !== payload.old.user_id
-              );
-            });
-          }
-        }
-      )
-      .subscribe((status) => {
-        if (status !== "SUBSCRIBED") {
-          console.error("Error subscribing to channel:", status);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userStatusFilter, setPendingUsers]);
+    setPendingUsers(users);
+  }, [users]);
 
   const handleUserStatusUpdateAndAccountCreation = async (
     userTableId: number,
@@ -498,7 +341,7 @@ Kaitawan Tamu Team`;
       </Modal>
       {isSigningOut ? (
         <div className="box justify-center">
-          <div>Signing out...</div>
+          <Spinner color="success" />
         </div>
       ) : (
         <div className="box h-full flex-col relative">
@@ -851,7 +694,7 @@ Kaitawan Tamu Team`;
               />
             )}
           </div>
-          <footer className="absolute bottom-0 w-full text-center text-xs py-2">
+          <footer className="absolute bottom-0 w-full text-center text-xs py-2 bg-green-800 text-white">
             All rights reserved to Kaitawan Tamu ({new Date().getFullYear()})
           </footer>
         </div>

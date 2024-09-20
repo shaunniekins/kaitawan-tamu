@@ -1,10 +1,12 @@
-create view "ViewFullInProgressPurchasesTransactions" as
+create view
+  public.ViewFullInProgressPurchasesTransactions as
 select
   ipp.in_progress_id,
   ipp.final_price,
   ipp.progress_status,
-  ipp.created_at as progress_created_at,
   ipp.buyer_id,
+  ipp.created_at as progress_created_at,
+  ipp.last_accessed_at as progress_last_accessed_at,
   coalesce(
     u.raw_user_meta_data ->> 'first_name'::text,
     'Unknown'::text

@@ -1,26 +1,5 @@
 import { supabase } from "@/utils/supabase/supabaseDb";
 
-// Admin
-export const fetchUsersDataForAdmin = async (filter: string) => {
-  try {
-    let query = supabase.from("Users").select("*").order("created_at");
-
-    if (filter) {
-      query = query.eq("status", filter);
-    }
-
-    const response = await query;
-
-    if (response.error) {
-      throw response.error;
-    }
-    return response;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    return null;
-  }
-};
-
 export const insertNewUser = async (data: any) => {
   try {
     const response = await supabase.from("Users").insert(data).select();

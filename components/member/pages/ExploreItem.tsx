@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { IoChevronBack, IoChevronDown, IoChevronUp } from "react-icons/io5";
 import ExploreItemHeader from "../headers/ExploreItemHeader";
-import { fetchItemInventoryDataByItem } from "@/app/api/itemInventoryData";
+import { fetchItemInventoryDataByItem } from "@/app/api/itemInventoryIUD";
 import {
   checkerBiddingItemByUser,
   fetchBiddingTransactionDataPerItem,

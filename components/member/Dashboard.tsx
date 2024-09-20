@@ -2,7 +2,7 @@
 
 "use client";
 
-import { Button } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -45,7 +45,7 @@ const MemberComponent = () => {
     <>
       {isSigningOut && (
         <div className="box flex-col justify-center">
-          <div>Signing out...</div>
+          <Spinner color="success" />
         </div>
       )}
     </>

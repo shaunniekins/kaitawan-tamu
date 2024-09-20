@@ -19,8 +19,8 @@ import { useRouter } from "next/navigation";
 import ExploreHeader from "../headers/ExploreHeader";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
-import { fetchItemInventoryData } from "@/app/api/itemInventoryData";
 import { MdOutlineSell } from "react-icons/md";
+import useActiveItems from "@/hooks/useActiveItems";
 
 const ExplorePage = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -41,28 +41,19 @@ const ExplorePage = () => {
       });
   }, [supabase]);
 
-  const memoizedFetchItemInventoryData = useCallback(async () => {
-    if (!user?.id) {
-      console.error("User ID is undefined");
-      return;
-    }
-
-    try {
-      const response = await fetchItemInventoryData(user.id, selectedTags);
-      if (response?.error) {
-        console.error(response.error);
-      } else {
-        setExploreItems(response?.data ?? []);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  }, [user?.id, selectedTags, setExploreItems]);
+  const { activeItems, loadingActiveItems, errorActiveItems } = useActiveItems(
+    undefined,
+    user?.id,
+    selectedTags
+  );
 
   useEffect(() => {
-    memoizedFetchItemInventoryData();
-  }, [memoizedFetchItemInventoryData]);
+    if (!loadingActiveItems) {
+      setExploreItems(activeItems);
+      // setIsLoading(false);
+      setIsLoading(loadingActiveItems);
+    }
+  }, [activeItems, loadingActiveItems]);
 
   const toggleTagSelection = (tag: string) => {
     if (selectedTags.includes(tag)) {

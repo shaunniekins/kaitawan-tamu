@@ -18,7 +18,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { fetchBiddingTransactionDataPerUser } from "@/app/api/biddingTransactionData";
-import { fetchItemsBasedOnId } from "@/app/api/itemInventoryData";
+import { fetchItemsBasedOnId } from "@/app/api/itemInventoryIUD";
 import {
   checkerInProgressPurchaseItemByUser,
   fetchInProgressPurchasesByUser,

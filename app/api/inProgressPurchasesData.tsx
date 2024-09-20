@@ -58,3 +58,5 @@ export const insertInProgressPurchaseData = async (data: any) => {
     return null;
   }
 };
+
+// export const updateInProgressPurchaseData = 

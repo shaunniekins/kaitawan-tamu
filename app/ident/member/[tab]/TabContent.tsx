@@ -2,6 +2,7 @@
 "use client";
 
 import CartPage from "@/components/member/pages/CartPage";
+import ChatPage from "@/components/member/pages/ChatPage";
 import ExplorePage from "@/components/member/pages/ExplorePage";
 import ListingPage from "@/components/member/pages/ListingPage";
 import ProfilePage from "@/components/member/pages/ProfilePage";
@@ -19,6 +20,9 @@ export default function TabContent() {
       break;
     case "/ident/member/transaction":
       activeComponent = <CartPage />;
+      break;
+    case "/ident/member/chat":
+      activeComponent = <ChatPage />;
       break;
     case "/ident/member/sell":
       activeComponent = <SellPage />;

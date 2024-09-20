@@ -1,32 +1,5 @@
 import { supabase } from "@/utils/supabase/supabaseDb";
 
-// Admin
-export const fetchPendingItemsInInventoryDataForAdmin = async (
-  filter: string
-) => {
-  try {
-    let query = supabase
-      .from("ViewActiveItems")
-      .select("*")
-      // .eq("item_status", "pending")
-      .order("item_created_at", { ascending: false });
-
-    if (filter) {
-      query = query.eq("item_status", filter);
-    }
-
-    const response = await query;
-
-    if (response.error) {
-      throw response.error;
-    }
-    return response;
-  } catch (error) {
-    console.error("Error fetching item inventory data:", error);
-    return null;
-  }
-};
-
 export const updatePendingItemsInInventoryDataForAdmin = async (
   item_id: number,
   updatedStatus: string
@@ -48,34 +21,6 @@ export const updatePendingItemsInInventoryDataForAdmin = async (
 };
 
 // others
-
-export const fetchItemInventoryData = async (
-  userId: string,
-  tags?: string[]
-) => {
-  try {
-    let query = supabase
-      .from("ViewActiveItems")
-      .select("*")
-      .neq("seller_id", userId)
-      .eq("item_status", "approved")
-      .order("item_created_at", { ascending: false });
-
-    if (tags && tags.length > 0) {
-      query = query.in("item_category", tags);
-    }
-
-    const response = await query;
-
-    if (response.error) {
-      throw response.error;
-    }
-    return response;
-  } catch (error) {
-    console.error("Error fetching item inventory data:", error);
-    return null;
-  }
-};
 
 export const fetchItemInventoryDataByItem = async (itemId: number) => {
   try {

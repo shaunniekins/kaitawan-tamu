@@ -14,7 +14,7 @@ import {
 import SellHeader from "../headers/SellHeader";
 import ImageSelector from "@/components/ImageSelector";
 import { useEffect, useState } from "react";
-import { insertItemInventoryData } from "@/app/api/itemInventoryData";
+import { insertItemInventoryData } from "@/app/api/itemInventoryIUD";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";

@@ -12,6 +12,7 @@ import {
 import { GrTransaction } from "react-icons/gr";
 import { Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { FaComments } from "react-icons/fa";
 
 interface NavigationItem {
   path: string;
@@ -29,6 +30,11 @@ const navigationItems: NavigationItem[] = [
     path: "/ident/member/transaction",
     name: "Transaction",
     Icon: GrTransaction,
+  },
+  {
+    path: "/ident/member/chat",
+    name: "Chat",
+    Icon: FaComments,
   },
   {
     path: "/ident/member/sell",
@@ -51,6 +57,10 @@ const navigationItems: NavigationItem[] = [
 const shouldHideBottomBar = (pathname: string, isLargeScreen: boolean) => {
   // Directly return true if the current pathname is exactly "/ident/member/sell" and screen size is less than lg
   if (pathname === "/ident/member/sell" && !isLargeScreen) {
+    return true;
+  }
+
+  if (pathname === "/ident/member/chat" && !isLargeScreen) {
     return true;
   }
 
@@ -121,29 +131,33 @@ const BottomNavBarComponent = () => {
       {/* mobile */}
       <div className="lg:hidden fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
-          {navigationItems.map(({ path, name, Icon }) => (
-            <button
-              key={name}
-              className={`bottom-navtab-buttons ${
-                pathname === path ? "border-[#008B47] bg-green-50" : ""
-              } ${path === "/ident/member/sell" ? "hidden lg:flex" : ""}`}
-              onClick={() => {
-                if (pathname.includes(path)) return;
-                setIsLoading(true);
-                return router.push(path);
-              }}
-            >
-              <Icon
-                size={25}
-                className={`${
-                  name !== "Sell" && pathname === path ? "text-[#008B47]" : ""
-                } ${name === "Sell" && "bg-[#008B47] text-white rounded-lg"}`}
-              />
-              <span className={`${pathname === path ? "text-[#008B47]" : ""}`}>
-                {name}
-              </span>
-            </button>
-          ))}
+          {navigationItems
+            .filter(({ name }) => name !== "Chat") // Exclude Chat
+            .map(({ path, name, Icon }) => (
+              <button
+                key={name}
+                className={`bottom-navtab-buttons ${
+                  pathname === path ? "border-[#008B47] bg-green-50" : ""
+                } ${path === "/ident/member/sell" ? "hidden lg:flex" : ""}`}
+                onClick={() => {
+                  if (pathname.includes(path)) return;
+                  setIsLoading(true);
+                  return router.push(path);
+                }}
+              >
+                <Icon
+                  size={25}
+                  className={`${
+                    name !== "Sell" && pathname === path ? "text-[#008B47]" : ""
+                  } ${name === "Sell" && "bg-[#008B47] text-white rounded-lg"}`}
+                />
+                <span
+                  className={`${pathname === path ? "text-[#008B47]" : ""}`}
+                >
+                  {name}
+                </span>
+              </button>
+            ))}
         </div>
       </div>
     </>

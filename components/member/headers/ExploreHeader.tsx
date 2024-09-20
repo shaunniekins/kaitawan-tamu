@@ -6,6 +6,7 @@ import { SearchIcon } from "@/public/icons/SearchIcon";
 import { Button, Input } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { IoChatboxOutline } from "react-icons/io5";
@@ -14,13 +15,16 @@ const ExploreHeader = () => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  const router = useRouter();
+
   return (
     <>
       <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md lg:shadow-none fixed inset-x-0 top-0 lg:top-10 z-50">
         <div className="w-full max-w-6xl flex justify-between items-center">
           <Link
             href="/ident/member/explore"
-            className="flex items-center text-2xl font-bold mr-2 lg:mr-3">
+            className="flex items-center text-2xl font-bold mr-2 lg:mr-3"
+          >
             <Image
               src="/images/asscat-logo.jpeg"
               alt="Kaitawan Tamu Logo"
@@ -73,7 +77,8 @@ const ExploreHeader = () => {
                 disableAnimation
                 radius="sm"
                 className="p-0 m-0"
-                onClick={() => {}}>
+                onClick={() => {}}
+              >
                 <IoIosNotificationsOutline size={30} />
               </Button>
               <Button
@@ -82,7 +87,10 @@ const ExploreHeader = () => {
                 disableAnimation
                 radius="sm"
                 className="p-0 m-0"
-                onClick={() => {}}>
+                onClick={() => {
+                  router.push("/ident/member/chat");
+                }}
+              >
                 {/* <Image
                   src="/images/virtual-assistant.png"
                   alt="Virtual Assistant Icon"

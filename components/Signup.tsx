@@ -2,9 +2,10 @@
 
 "use client";
 
-import { insertNewUser } from "@/app/api/usersData";
+import { insertNewUser } from "@/app/api/usersIUD";
 import { EyeFilledIcon } from "@/public/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "@/public/icons/EyeSlashFilledIcon";
+import { supabaseAdmin } from "@/utils/supabase/supabaseDb";
 import { Button, Image, Input } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -43,10 +44,11 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    if (!validateEmail(email)) {
-      alert("Email must end with '@asscat.edu.ph'");
-      return;
-    }
+    // temporary
+    // if (!validateEmail(email)) {
+    //   alert("Email must end with '@asscat.edu.ph'");
+    //   return;
+    // }
 
     if (!validatePassword(password)) {
       alert("Password must be at least 8 characters long");
@@ -63,19 +65,38 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
 
     setSignUpPending(true);
     // await signUp(headers, role, formData);
-    const newUserData = {
-      first_name: formData.get("first_name") as string,
-      last_name: formData.get("last_name") as string,
-      role: role,
-      school_id_number: formData.get("id_number") as string,
-      year_level: yearLevel,
+    // const newUserData = {
+    //   first_name: formData.get("first_name") as string,
+    //   last_name: formData.get("last_name") as string,
+    //   role: role,
+    //   school_id_number: formData.get("id_number") as string,
+    //   year_level: yearLevel,
+    //   email: email,
+    //   password: password,
+    // };
+
+    // const response = await insertNewUser(newUserData);
+
+    /// temporary part here
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password: password,
-    };
+      email_confirm: true,
+      user_metadata: {
+        email: email,
+        id_number: formData.get("id_number") as string,
+        first_name: formData.get("first_name") as string,
+        last_name: formData.get("last_name") as string,
+        password: password,
+        year_level: yearLevel,
+        role: "member",
+        status: "active",
+      },
+    });
+    ///
 
-    const response = await insertNewUser(newUserData);
-
-    if (!response) {
+    // if (!response) {
+    if (error) {
       alert("Failed to sign up. Please try again.");
       setSignUpPending(false);
       return;
@@ -198,7 +219,7 @@ const SignupComponent: React.FC<SignupComponentProps> = ({
           }}
           className="mb-10"
         >
-          Already Logged in
+          Already Have an Account
         </Button>
       </div>
     </div>
