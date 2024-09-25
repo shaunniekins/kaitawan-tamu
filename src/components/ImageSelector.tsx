@@ -28,8 +28,13 @@ const DraggableImage = ({ id, src, index, moveImage, removeImage }: any) => {
     },
   });
 
+  const combinedRef = (node: HTMLDivElement | null) => {
+    ref(node);
+    drop(node);
+  };
+
   return (
-    <div ref={(node) => ref(drop(node))} className="relative">
+    <div ref={combinedRef} className="relative">
       <img
         src={src}
         alt="Preview"

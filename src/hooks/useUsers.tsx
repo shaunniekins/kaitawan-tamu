@@ -8,11 +8,16 @@ const useUsers = (filter: string) => {
   const [errorUsers, setErrorUsers] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
+    if (!filter) return;
+
     setLoadingUsers(true);
     setErrorUsers(null);
 
     try {
-      let query = supabase.from("Users").select("*").order("created_at");
+      let query = supabase
+        .from("ViewMemberUsers")
+        .select("*")
+        .order("created_at");
 
       if (filter) {
         query = query.eq("status", filter);
@@ -42,8 +47,8 @@ const useUsers = (filter: string) => {
         "postgres_changes",
         {
           event: "*",
-          schema: "public",
-          table: "Users",
+          schema: "auth",
+          table: "users",
         },
         (payload) => {
           const { eventType, new: newRecord, old: oldRecord } = payload;
@@ -55,7 +60,7 @@ const useUsers = (filter: string) => {
               case "UPDATE":
                 const updatedUsers = prev
                   .map((user) => {
-                    if (user.user_id === newRecord.user_id) {
+                    if (user.id === newRecord.id) {
                       // If the status matches the filter, update the user
                       if (newRecord.status === filter) {
                         return newRecord;
@@ -70,16 +75,14 @@ const useUsers = (filter: string) => {
                 // If the status matches the filter and the user is not in the list, add it
                 if (
                   newRecord.status === filter &&
-                  !updatedUsers.some(
-                    (user) => user.user_id === newRecord.user_id
-                  )
+                  !updatedUsers.some((user) => user.id === newRecord.id)
                 ) {
                   updatedUsers.push(newRecord);
                 }
 
                 return updatedUsers;
               case "DELETE":
-                return prev.filter((p) => p.user_id !== oldRecord.user_id);
+                return prev.filter((p) => p.id !== oldRecord.id);
               default:
                 return prev;
             }
@@ -89,7 +92,7 @@ const useUsers = (filter: string) => {
       .subscribe((status) => {
         if (status !== "SUBSCRIBED") {
           setErrorUsers("Error subscribing to user changes");
-          console.error("Error subscribing to channel: ", status);
+          // console.error("Error subscribing to channel: ", status);
         }
       });
 

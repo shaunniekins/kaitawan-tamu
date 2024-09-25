@@ -3,10 +3,15 @@ RETURNS TRIGGER AS $$
 DECLARE
     seller_id uuid;
 BEGIN
-    -- Get the seller_id from the ItemInventory table based on the item_id
+    -- Try to fetch the seller_id from the ItemInventory table
     SELECT i.seller_id INTO seller_id
     FROM public."ItemInventory" i
     WHERE i.item_id = NEW.item_id;
+    
+    -- If seller_id is NULL, raise an exception
+    IF seller_id IS NULL THEN
+        RAISE EXCEPTION 'No seller found for item_id: %', NEW.item_id;
+    END IF;
 
     -- Insert a new chat message from the seller to the buyer
     INSERT INTO public."ChatMessages" (
@@ -24,7 +29,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_insert_chat_message
-AFTER INSERT ON public."InProgressPurchases"
+
+
+CREATE TRIGGER trigger_update_chat_message
+AFTER UPDATE ON public."InProgressPurchases"
 FOR EACH ROW
-EXECUTE FUNCTION insert_chat_message_on_in_progress_insert();
+EXECUTE FUNCTION update_chat_message_on_in_progress_update();
+

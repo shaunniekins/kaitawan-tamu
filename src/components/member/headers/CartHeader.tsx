@@ -1,45 +1,10 @@
-// components/admin/headers/CartHeader.tsx
-
-"use client";
-
-import { Button, Input } from "@nextui-org/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { IoIosClose, IoIosNotificationsOutline } from "react-icons/io";
-import {
-  IoCartOutline,
-  IoChatboxOutline,
-  IoChevronBack,
-} from "react-icons/io5";
-import { AiOutlineDelete } from "react-icons/ai";
-import { useRouter } from "next/navigation";
-
 const CartHeader = () => {
-  const [searchValue, setSearchValue] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const router = useRouter();
-
   return (
-    <>
-      <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md fixed inset-x-0 top-0 lg:top-10 z-50">
-        <div className="w-full max-w-6xl flex justify-between items-center">
-          <h1 className="font-bold text-xl ml-1">Transactions</h1>
-          <Button
-            isIconOnly
-            variant="light"
-            disableAnimation
-            radius="sm"
-            className="p-0 m-0"
-            onClick={() => {
-              return router.push("/member/cart");
-            }}
-          >
-            {/* <AiOutlineDelete size={30} /> */}
-          </Button>
-        </div>
-      </header>
-    </>
+    <header className="sticky lg:hidden top-0 bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md lg:shadow-none z-50">
+      <div className="w-full max-w-6xl flex justify-center items-center py-[0.36rem]">
+        <h1 className="font-bold text-lg">Transactions</h1>
+      </div>
+    </header>
   );
 };
 

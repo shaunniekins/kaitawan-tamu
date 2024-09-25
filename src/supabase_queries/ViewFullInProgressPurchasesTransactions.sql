@@ -1,5 +1,5 @@
 create view
-  public.ViewFullInProgressPurchasesTransactions as
+  "ViewFullInProgressPurchasesTransactions" as
 select
   ipp.in_progress_id,
   ipp.final_price,
@@ -40,6 +40,7 @@ select
   i.item_description,
   i.item_status,
   i.item_selling_type,
+  i.image_urls,
   i.created_at as item_created_at
 from
   "InProgressPurchases" ipp

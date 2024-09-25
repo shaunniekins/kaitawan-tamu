@@ -1,5 +1,5 @@
 create view
-  public.ViewActiveItems as
+  "ViewFullItemInventory" as
 select
   i.item_id,
   i.seller_id,
@@ -10,6 +10,7 @@ select
   i.item_description,
   i.item_status,
   i.item_selling_type,
+  i.image_urls,
   i.created_at as item_created_at,
   coalesce(
     u.raw_user_meta_data ->> 'first_name'::text,
@@ -25,7 +26,4 @@ select
   ) as seller_email
 from
   "ItemInventory" i
-  left join "SoldItemsInventory" s on i.item_id = s.item_list_id
-  left join auth.users u on i.seller_id = u.id
-where
-  s.item_list_id is null;
+  join auth.users u on i.seller_id = u.id

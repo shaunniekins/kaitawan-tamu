@@ -1,5 +1,5 @@
 create view
-  public."ViewLatestChatHeaders" as
+  "ViewLatestChatHeaders" as
 select
   cm.chat_message_id,
   cm.sender_id,

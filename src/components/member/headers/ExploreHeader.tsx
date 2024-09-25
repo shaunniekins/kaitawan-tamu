@@ -1,5 +1,3 @@
-// components/admin/headers/ExploreHeader.tsx
-
 "use client";
 
 import { SearchIcon } from "../../../../public/icons/SearchIcon";
@@ -18,93 +16,91 @@ const ExploreHeader = () => {
   const router = useRouter();
 
   return (
-    <>
-      <header className="bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md lg:shadow-none fixed inset-x-0 top-0 lg:top-10 z-50">
-        <div className="w-full max-w-6xl flex justify-between items-center">
-          <Link
-            href="/member/explore"
-            className="flex items-center text-2xl font-bold mr-2 lg:mr-3"
-          >
-            <Image
-              src="/images/asscat-logo.jpeg"
-              alt="Kaitawan Tamu Logo"
-              width={50}
-              height={50}
-              className="rounded-full"
-            />
-            {/* <span className="text-lg hidden lg:block">Kaitawan Tamu</span> */}
-          </Link>
-          <Input
-            isClearable
-            onClear={() => setSearchValue("")}
-            radius="lg"
-            classNames={{
-              label: "text-black/50 dark:text-white/90",
-              input: [
-                "bg-transparent",
-                "text-black/90 dark:text-white/90",
-                "placeholder:text-default-700/50 dark:placeholder:text-white/60",
-              ],
-              innerWrapper: "bg-transparent",
-              inputWrapper: [
-                "bg-default-200/50",
-                "dark:bg-default/60",
-                "backdrop-blur-xl",
-                "backdrop-saturate-200",
-                "hover:bg-default-200/70",
-                "dark:hover:bg-default/70",
-                "group-data-[focused=true]:bg-default-200/50",
-                "dark:group-data-[focused=true]:bg-default/60",
-                "!cursor-text",
-              ],
-            }}
-            placeholder="Search"
-            value={searchValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setCurrentPage(1);
-              setSearchValue(e.target.value);
-            }}
-            startContent={
-              <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
-            }
+    <header className="sticky top-0 bg-white py-2 px-2 md:px-0 w-full flex items-center justify-center shadow-md lg:shadow-none z-50">
+      <div className="w-full max-w-6xl flex justify-between items-center">
+        <Link
+          href="/member/explore"
+          className="flex items-center text-2xl font-bold mr-2 lg:mr-3"
+        >
+          <Image
+            src="/images/asscat-logo.jpeg"
+            alt="Kaitawan Tamu Logo"
+            width={50}
+            height={50}
+            className="rounded-full"
           />
+          {/* <span className="text-lg hidden lg:block">Kaitawan Tamu</span> */}
+        </Link>
+        <Input
+          isClearable
+          onClear={() => setSearchValue("")}
+          radius="lg"
+          classNames={{
+            label: "text-black/50 dark:text-white/90",
+            input: [
+              "bg-transparent",
+              "text-black/90 dark:text-white/90",
+              "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+            ],
+            innerWrapper: "bg-transparent",
+            inputWrapper: [
+              "bg-default-200/50",
+              "dark:bg-default/60",
+              "backdrop-blur-xl",
+              "backdrop-saturate-200",
+              "hover:bg-default-200/70",
+              "dark:hover:bg-default/70",
+              "group-data-[focused=true]:bg-default-200/50",
+              "dark:group-data-[focused=true]:bg-default/60",
+              "!cursor-text",
+            ],
+          }}
+          placeholder="Search"
+          value={searchValue}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setCurrentPage(1);
+            setSearchValue(e.target.value);
+          }}
+          startContent={
+            <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
+          }
+        />
 
-          <div className="flex flex-col justify-end items-end">
-            <div className="flex items-center gap-1">
-              <Button
-                isIconOnly
-                variant="light"
-                disableAnimation
-                radius="sm"
-                className="p-0 m-0"
-                onClick={() => {}}
-              >
-                <IoIosNotificationsOutline size={30} />
-              </Button>
-              <Button
-                isIconOnly
-                variant="light"
-                disableAnimation
-                radius="sm"
-                className="p-0 m-0"
-                onClick={() => {
-                  router.push("/member/chat");
-                }}
-              >
-                {/* <Image
+        <div className="flex flex-col justify-end items-end">
+          <div className="flex items-center gap-1">
+            <Button
+              isIconOnly
+              variant="light"
+              disableAnimation
+              radius="sm"
+              className="p-0 m-0"
+              onClick={() => {}}
+            >
+              <IoIosNotificationsOutline size={30} />
+            </Button>
+            <Button
+              isIconOnly
+              variant="light"
+              disableAnimation
+              radius="sm"
+              className="p-0 m-0 lg:hidden"
+              onClick={() => {
+                router.push("/member/chat");
+              }}
+            >
+              {/* <Image
                   src="/images/virtual-assistant.png"
                   alt="Virtual Assistant Icon"
                   width={50}
                   height={50}
                   className="rounded-full"
                 /> */}
-                <IoChatboxOutline size={25} />
-              </Button>
-            </div>
+              <IoChatboxOutline size={25} />
+            </Button>
           </div>
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 };
 

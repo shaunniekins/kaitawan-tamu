@@ -1,6 +1,6 @@
 "use client";
 
-import { insertNewUser } from "@/app/api/usersIUD";
+// import { insertNewUser } from "@/app/api/usersIUD";
 import { EyeFilledIcon } from "../../public/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../public/icons/EyeSlashFilledIcon";
 import { supabaseAdmin } from "@/utils/supabase";
@@ -36,11 +36,10 @@ const SignupComponent = ({ userType }: SignupComponentProps) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    // temporary
-    // if (!validateEmail(email)) {
-    //   alert("Email must end with '@asscat.edu.ph'");
-    //   return;
-    // }
+    if (!validateEmail(email)) {
+      alert("Email must end with '@asscat.edu.ph'");
+      return;
+    }
 
     if (!validatePassword(password)) {
       alert("Password must be at least 8 characters long");
@@ -73,7 +72,7 @@ const SignupComponent = ({ userType }: SignupComponentProps) => {
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password: password,
-      email_confirm: true,
+      email_confirm: true, // temporary, it should be false
       user_metadata: {
         email: email,
         id_number: formData.get("id_number") as string,
@@ -82,7 +81,7 @@ const SignupComponent = ({ userType }: SignupComponentProps) => {
         password: password,
         year_level: yearLevel,
         role: "member",
-        status: "active",
+        status: "active", // temporary, it should be pending
       },
     });
     ///

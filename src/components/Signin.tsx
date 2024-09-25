@@ -37,6 +37,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
 
     if (error) {
       console.error("Error signing in:", error.message);
+      alert(error.message);
       setSignInPending(false);
     } else {
       const user = data.user;
@@ -49,7 +50,23 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
   };
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-white relative">
+      <div className="absolute top-3 right-3">
+        <Button
+          color="success"
+          variant="light"
+          size="sm"
+          onClick={() => {
+            return router.push(
+              userType === "administrator"
+                ? "/ident/signin?usertype=member"
+                : "/ident/signin?usertype=administrator"
+            );
+          }}
+        >
+          {userType === "administrator" ? "Not an Admin?" : "Admin?"}
+        </Button>
+      </div>
       <div className="mx-5 lg:container lg:mx-auto 2xl:px-[35rem] min-h-[100svh] h-[100svh] flex flex-col justify-around items-center">
         <div className="flex flex-col gap-3 text-[#008B47] font-semibold text-lg">
           <Image
@@ -59,7 +76,10 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
             height={130}
             className="mt-12"
           />
-          <h6>Kaitawan Tamu</h6>
+          <div className="flex flex-col justify-center items-center">
+            <h6>Kaitawan Tamu</h6>
+            <h6 className="text-xs capitalize font-normal">{userType}</h6>
+          </div>
         </div>
         <form
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2"

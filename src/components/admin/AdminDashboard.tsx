@@ -8,6 +8,7 @@ import {
   Card,
   CardBody,
   Chip,
+  Image,
   Modal,
   ModalBody,
   ModalContent,
@@ -20,19 +21,33 @@ import {
   Tab,
   Tabs,
 } from "@nextui-org/react";
-import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineLogout } from "react-icons/md";
-import { Key, useCallback, useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import { RxBox, RxDashboard, RxGear, RxPerson } from "react-icons/rx";
-import { updatePendingItemsInInventoryDataForAdmin } from "@/app/api/itemInventoryIUD";
-import { updateNewUser } from "@/app/api/usersIUD";
+// import { updateNewUser } from "@/app/api/usersIUD";
 import { supabaseAdmin } from "@/utils/supabase";
-import useUsers from "@/hooks/useUsers";
-import useActiveItems from "@/hooks/useActiveItems";
+// import useUsers from "@/hooks/useUsers";
+// import useActiveItems from "@/hooks/useActiveItems";
 import { useHandleLogout } from "@/utils/authUtils";
+import { updateItemInventoryData } from "@/app/api/itemInventoryIUD";
+import useItemInventory from "@/hooks/useItemInventory";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/reduxUtils/store";
+import { useRouter } from "next/navigation";
+import useUsers from "@/hooks/useUsers";
+import { updateMemberUser } from "@/app/api/updateUser";
 
 const AdminDashboardComponent = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+
+  const router = useRouter();
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const rowsPerPage = 200;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState("dashboard");
 
@@ -60,12 +75,19 @@ const AdminDashboardComponent = () => {
   }, [currentTab]);
 
   // 2) Product Listings
-  const { activeItems, loadingActiveItems, errorActiveItems } =
-    useActiveItems(productListingFilter);
+  const { items, loadingItems, errorItems } = useItemInventory(
+    rowsPerPage,
+    currentPage,
+    productListingFilter,
+    true,
+    undefined,
+    undefined,
+    undefined
+  );
 
   useEffect(() => {
-    setPendingItems(activeItems);
-  }, [activeItems]);
+    setPendingItems(items);
+  }, [items]);
 
   useEffect(() => {
     if (!openSpecificItemModal) {
@@ -74,13 +96,26 @@ const AdminDashboardComponent = () => {
   }, [openSpecificItemModal]);
 
   const handleItemStatusUpdate = async (itemId: number, newStatus: string) => {
-    await updatePendingItemsInInventoryDataForAdmin(itemId, newStatus);
+    const data = { item_status: newStatus };
+    await updateItemInventoryData(data, itemId);
     setOpenSpecificItemModal(false);
     setSelectedItem(null);
   };
 
   // 3) Users
   const { users, loadingUsers, errorUsers } = useUsers(userStatusFilter);
+  // const [users, setUsers] = useState<any[]>([]);
+
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     const fetchedUsers = await fetchMemberUser();
+  //     if (fetchedUsers) {
+  //       setPendingUsers(fetchedUsers);
+  //     }
+  //   };
+
+  //   fetchUsers();
+  // }, []);
 
   useEffect(() => {
     setPendingUsers(users);
@@ -90,78 +125,83 @@ const AdminDashboardComponent = () => {
     userTableId: number,
     newStatus: string
   ) => {
-    if (newStatus === "approved") {
-      const { data, error } = await supabaseAdmin.auth.admin.createUser({
-        email: selectedUser.email,
-        password: selectedUser.password,
-        email_confirm: true,
-        user_metadata: {
-          email: selectedUser.email,
-          id_number: selectedUser.school_id_number,
-          first_name: selectedUser.first_name,
-          last_name: selectedUser.last_name,
-          password: selectedUser.password,
-          year_level: selectedUser.year_level,
-          role: "member",
-          status: "active",
-        },
-      });
-      await updateNewUser(userTableId, newStatus, data.user?.id);
+    //     if (newStatus === "approved") {
+    //       const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    //         email: selectedUser.email,
+    //         password: selectedUser.password,
+    //         email_confirm: true,
+    //         user_metadata: {
+    //           email: selectedUser.email,
+    //           id_number: selectedUser.school_id_number,
+    //           first_name: selectedUser.first_name,
+    //           last_name: selectedUser.last_name,
+    //           password: selectedUser.password,
+    //           year_level: selectedUser.year_level,
+    //           role: "member",
+    //           status: "active",
+    //         },
+    //       });
+    //       await updateNewUser(userTableId, newStatus, data.user?.id);
 
-      const email = selectedUser.email;
-      const recipient_name = `${selectedUser.first_name} ${selectedUser.last_name}`;
-      const subject = "Account Approved";
-      const message = `
-Greetings!
+    //       const email = selectedUser.email;
+    //       const recipient_name = `${selectedUser.first_name} ${selectedUser.last_name}`;
+    //       const subject = "Account Approved";
+    //       const message = `
+    // Greetings!
 
-We are pleased to inform you that your account associated with the email ${email} has been approved. You can now sign in and access your account.
+    // We are pleased to inform you that your account associated with the email ${email} has been approved. You can now sign in and access your account.
 
-Thank you!
+    // Thank you!
 
-Best regards,
-Kaitawan Tamu Team`;
+    // Best regards,
+    // Kaitawan Tamu Team`;
 
-      try {
-        const response = await fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, recipient_name, subject, message }),
-        });
+    //       try {
+    //         const response = await fetch("/api/send-email", {
+    //           method: "POST",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify({ email, recipient_name, subject, message }),
+    //         });
 
-        let data;
-        try {
-          data = await response.json();
-        } catch (error) {
-          data = null;
-        }
+    //         let data;
+    //         try {
+    //           data = await response.json();
+    //         } catch (error) {
+    //           data = null;
+    //         }
 
-        if (response.ok) {
-          console.log("Email sent successfully!");
-        } else {
-          console.log(
-            `Failed to send email: ${data?.error || "Unknown error"}`
-          );
-        }
-      } catch (error) {
-        console.error("Error sending email:", error);
-      }
-    } else if (newStatus === "suspended") {
-      await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
-        user_metadata: {
-          status: "suspended",
-        },
-      });
-      await updateNewUser(userTableId, newStatus);
-    } else if (newStatus === "reapproved") {
-      await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
-        user_metadata: {
-          status: "active",
-        },
-      });
-      await updateNewUser(userTableId, "approved");
-    } else {
-      await updateNewUser(userTableId, newStatus);
-    }
+    //         if (response.ok) {
+    //           console.log("Email sent successfully!");
+    //         } else {
+    //           console.log(
+    //             `Failed to send email: ${data?.error || "Unknown error"}`
+    //           );
+    //         }
+    //       } catch (error) {
+    //         console.error("Error sending email:", error);
+    //       }
+    //     } else if (newStatus === "suspended") {
+    //       await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
+    //         user_metadata: {
+    //           status: "suspended",
+    //         },
+    //       });
+    //       await updateNewUser(userTableId, newStatus);
+    //     } else if (newStatus === "reapproved") {
+    //       await supabaseAdmin.auth.admin.updateUserById(selectedUser.auth_user_id, {
+    //         user_metadata: {
+    //           status: "active",
+    //         },
+    //       });
+    //       await updateNewUser(userTableId, "approved");
+    //     } else {
+    //       await updateNewUser(userTableId, newStatus);
+    //     }
+
+    // console.log("userTableId: ", userTableId);
+    // console.log("newStatus: ", newStatus);
+
+    updateMemberUser(userTableId.toString(), newStatus);
 
     setOpenSpecificUserModal(false);
     setSelectedUser(null);
@@ -188,10 +228,15 @@ Kaitawan Tamu Team`;
               </ModalHeader>
               <ModalBody>
                 <div className="flex gap-2">
-                  <img
+                  <Image
                     alt="Card background"
-                    className="object-cover h-32 w-32 rounded-md"
-                    src="https://nextui.org/images/hero-card-complete.jpeg"
+                    className="object-cover rounded-none rounded-b-md h-32 w-32"
+                    src={
+                      selectedItem.image_urls &&
+                      selectedItem?.image_urls.length > 0
+                        ? selectedItem.image_urls[0]
+                        : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                    }
                   />
                   <div className="truncate">
                     <h6 className="truncate font-semibold">
@@ -209,8 +254,9 @@ Kaitawan Tamu Team`;
 
                     <div className="flex gap-1">
                       <Avatar
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                        src="https://fakeimg.pl/500x500?text=user&font=bebas"
                         className="w-4 h-4 text-xs"
+                        disableAnimation
                       />
                       <h6 className="text-xs truncate">
                         {selectedItem.seller_first_name}{" "}
@@ -268,7 +314,7 @@ Kaitawan Tamu Team`;
                   <img
                     alt="Card background"
                     className="object-cover h-32 w-32 rounded-md"
-                    src="https://nextui.org/images/hero-card-complete.jpeg"
+                    src="https://fakeimg.pl/500x500?text=img&font=bebas"
                   />
                   <div className="truncate">
                     <h6 className="truncate font-semibold">
@@ -290,7 +336,7 @@ Kaitawan Tamu Team`;
                   className={`${selectedUser.status !== "pending" && "hidden"}`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.user_id,
+                      selectedUser.id,
 
                       "rejected"
                     )
@@ -305,7 +351,7 @@ Kaitawan Tamu Team`;
                   }`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.user_id,
+                      selectedUser.id,
                       "suspended"
                     )
                   }
@@ -318,7 +364,7 @@ Kaitawan Tamu Team`;
                   className={`${selectedUser.status !== "pending" && "hidden"}`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.user_id,
+                      selectedUser.id,
                       "approved"
                     )
                   }
@@ -332,7 +378,7 @@ Kaitawan Tamu Team`;
                   }`}
                   onClick={() =>
                     handleUserStatusUpdateAndAccountCreation(
-                      selectedUser.user_id,
+                      selectedUser.id,
                       "reapproved"
                     )
                   }
@@ -392,7 +438,7 @@ Kaitawan Tamu Team`;
                   size="lg"
                   fullWidth={true}
                   variant="underlined"
-                  disabledKeys={["settings"]}
+                  disabledKeys={["settings", "users"]} // temporary
                   onSelectionChange={handleSelectionChange}
                 >
                   <Tab
@@ -477,10 +523,16 @@ Kaitawan Tamu Team`;
                               <CardBody className="w-full">
                                 <div className="p-0 w-full flex justify-between">
                                   <div className="flex gap-2 overflow-hidden">
-                                    <img
+                                    <Image
                                       alt="Card background"
-                                      className="object-cover h-28 w-28 rounded-md"
-                                      src="https://nextui.org/images/hero-card-complete.jpeg"
+                                      // w-full aspect-square
+                                      className="object-cover rounded-none rounded-b-md h-32 w-32"
+                                      src={
+                                        item.image_urls &&
+                                        item?.image_urls.length > 0
+                                          ? item.image_urls[0]
+                                          : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                      }
                                     />
                                     <div className="truncate">
                                       <h6 className="truncate font-semibold">
@@ -498,8 +550,9 @@ Kaitawan Tamu Team`;
 
                                       <div className="flex gap-1">
                                         <Avatar
-                                          src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                          src="https://fakeimg.pl/500x500?text=user&font=bebas"
                                           className="w-4 h-4 text-xs"
+                                          disableAnimation
                                         />
                                         <h6 className="text-xs truncate">
                                           {item.seller_first_name}{" "}
@@ -601,7 +654,7 @@ Kaitawan Tamu Team`;
                                     <img
                                       alt="Card background"
                                       className="object-cover h-28 w-28 rounded-md"
-                                      src="https://nextui.org/images/hero-card-complete.jpeg"
+                                      src="https://fakeimg.pl/500x500?text=img&font=bebas"
                                     />
                                     <div className="truncate">
                                       <h6 className="truncate font-semibold">
@@ -687,7 +740,7 @@ Kaitawan Tamu Team`;
               </div>
             </div>
           </div>
-          <div className="absolute bottom-10">
+          {/* <div className="absolute bottom-10">
             {currentTab === "products" && (
               <Pagination
                 isCompact
@@ -698,10 +751,10 @@ Kaitawan Tamu Team`;
                 initialPage={1}
               />
             )}
-          </div>
-          <footer className="absolute bottom-0 w-full text-center text-xs py-2 bg-green-800 text-white">
+          </div> */}
+          {/* <footer className="absolute bottom-0 w-full text-center text-xs py-2 bg-green-800 text-white">
             All rights reserved to Kaitawan Tamu ({new Date().getFullYear()})
-          </footer>
+          </footer> */}
         </div>
       )}
     </>

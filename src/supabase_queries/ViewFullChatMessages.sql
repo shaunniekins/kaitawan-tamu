@@ -1,4 +1,4 @@
-CREATE VIEW public."ViewFullChatMessages" AS
+CREATE VIEW "ViewFullChatMessages" AS
 SELECT
     cm.chat_message_id,
     cm.message,

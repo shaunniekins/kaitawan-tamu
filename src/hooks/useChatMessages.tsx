@@ -124,7 +124,7 @@ const useChatMessages = (
       .subscribe((status) => {
         if (status !== "SUBSCRIBED") {
           setErrorChatMessages("Error subscribing to real-time updates");
-          console.error("Error subscribing to channel:", status);
+          // console.error("Error subscribing to channel:", status);
         }
       });
 

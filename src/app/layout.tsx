@@ -1,12 +1,24 @@
-import { GeistSans } from "geist/font/sans";
+import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ReduxProviders } from "./redux_providers";
+
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Kaitawan Tamu",
   description:
@@ -15,15 +27,15 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en" className={GeistSans.className}>
-      <body className="bg-background text-foreground select-none">
-        <main className="min-h-[100svh] flex flex-col items-center">
-          <ReduxProviders>{children}</ReduxProviders>
-        </main>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ReduxProviders>{children}</ReduxProviders>
       </body>
     </html>
   );

@@ -1,5 +1,3 @@
-// src/middleware.ts
-
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
@@ -39,6 +37,10 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (request.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/ident", request.url));
+  }
 
   if (
     request.nextUrl.pathname === "/admin" ||
