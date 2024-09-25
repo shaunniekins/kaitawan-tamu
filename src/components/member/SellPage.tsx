@@ -82,7 +82,7 @@ const SellPage = () => {
     const imageUrls: string[] = [];
 
     // Upload each image and get the public URL
-    for (let image of selectedImages) {
+    for (const image of selectedImages) {
       const { data, error } = await supabase.storage
         .from(BUCKET_NAME)
         .upload(`public/${Date.now()}_${image.name}`, image);
