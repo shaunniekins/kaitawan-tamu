@@ -89,9 +89,30 @@ const AdminDashboardComponent = () => {
 
             for (const user of usersData) {
               const currentYearLevel = parseInt(user.year_level, 10);
-              const newYearLevel = isDecreasing
-                ? currentYearLevel - iterations
-                : currentYearLevel + iterations;
+              let newYearLevel = currentYearLevel;
+
+              if (currentYearLevel >= 7) {
+                // If year level is 7 or greater, suspend the account
+                const { data: updatedUser, error } =
+                  await supabaseAdmin.auth.admin.updateUserById(user.id, {
+                    user_metadata: { account_status: "suspended" },
+                  });
+
+                if (error) {
+                  console.error(`Error updating user ${user.id}:`, error);
+                }
+
+                // Only allow decrementing if year level is 7 or greater
+                if (isDecreasing) {
+                  newYearLevel = currentYearLevel - iterations;
+                }
+              } else {
+                // Normal increment or decrement for year levels less than 7
+                newYearLevel = isDecreasing
+                  ? currentYearLevel - iterations
+                  : currentYearLevel + iterations;
+              }
+
               const { data: updatedUser, error } =
                 await supabaseAdmin.auth.admin.updateUserById(user.id, {
                   user_metadata: { year_level: newYearLevel },
