@@ -4,6 +4,7 @@ import useSingleItemInventory from "@/hooks/useSingleItemInventory";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/reduxUtils/store";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useEffect, useMemo, useState } from "react";
 import ExploreItemHeader from "./headers/ExploreItemHeader";
 import {
@@ -398,7 +399,9 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                       variant="solid"
                       radius="sm"
                       color="primary"
-                      onClick={() => {}}
+                      onClick={() => {
+                        router.push(`/member/profile/${item?.seller_id}`);
+                      }}
                     >
                       Visit User
                     </Button>
@@ -557,14 +560,19 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
             {/* footer */}
             <div className="sticky lg:hidden bottom-0 w-full z-50 bg-yello-600 shadow-lg">
               <div className="max-w-6xl mx-auto flex justify-around items-center gap-5 px-2 border-t-3 py-1">
-                <div className="flex flex-col items-center">
+                <button
+                  className="flex flex-col items-center"
+                  onClick={() => {
+                    router.push(`/member/profile/${item?.seller_id}`);
+                  }}
+                >
                   <Avatar
                     src="https://fakeimg.pl/500x500?text=user&font=bebas"
                     className="w-7 h-7 text-sm"
                     disableAnimation
                   />
                   <h6 className="text-xs">Seller</h6>
-                </div>
+                </button>
                 <Button
                   variant="bordered"
                   radius="sm"

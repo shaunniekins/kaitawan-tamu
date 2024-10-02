@@ -119,7 +119,7 @@ const ListingPage = () => {
                             </h4>
                             <h6
                               className={`text-xs uppercase ${
-                                item.item_status === "active"
+                                item.item_status === "approved"
                                   ? "text-green-500"
                                   : item.item_status === "pending"
                                   ? "text-gray-500"

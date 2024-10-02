@@ -119,9 +119,9 @@ export default function DashboardLayout({
               (isLargeScreen ||
                 pathname === "/member/account" ||
                 pathname === "/member/sell" ||
-                (pathname.startsWith("/member/explore/") 
+                pathname.startsWith("/member/explore/") ||
+                pathname.startsWith("/member/profile/")) &&
                 // && pathname !== "/member/explore"
-              )) &&
               "hidden"
             }`}
           >

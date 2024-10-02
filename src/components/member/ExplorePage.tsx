@@ -58,7 +58,7 @@ const ExplorePage = () => {
           <Spinner color="success" />
         </div>
       )}
-      <div className="w-full flex overflow-x-auto my-2 gap-2 custom-scrollbar">
+      <div className="w-full flex overflow-x-auto my-2 md:px-2 gap-2 custom-scrollbar">
         {tags.map((tag) => (
           <Chip
             key={tag}
