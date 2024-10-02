@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { persistor } from "./app/reduxUtils/store";
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
@@ -85,6 +86,16 @@ export async function middleware(request: NextRequest) {
 
   if (user) {
     const user_type = user.user_metadata.role;
+    const account_status = user.user_metadata.account_status;
+
+    if (user_type === "member" && account_status !== "active") {
+      const { error } = await supabase.auth.signOut();
+
+      if (!error) {
+        persistor.purge();
+      }
+      return NextResponse.redirect(new URL("/ident/confirmation", request.url));
+    }
 
     if (request.nextUrl.pathname === "/") {
       if (user_type === "member") {
@@ -96,6 +107,14 @@ export async function middleware(request: NextRequest) {
 
     if (request.nextUrl.pathname.startsWith("/ident")) {
       if (user_type === "member") {
+        return NextResponse.redirect(new URL("/member", request.url));
+      } else {
+        return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+      }
+    }
+
+    if (request.nextUrl.pathname.startsWith("/ident/confirmation")) {
+      if (user_type === "member" && account_status === "active") {
         return NextResponse.redirect(new URL("/member", request.url));
       } else {
         return NextResponse.redirect(new URL("/admin/dashboard", request.url));

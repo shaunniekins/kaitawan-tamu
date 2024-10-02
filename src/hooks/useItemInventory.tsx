@@ -17,6 +17,7 @@ const useItemInventory = (
 ) => {
   const [items, setItems] = useState<any[]>([]);
   const [loadingItems, setLoadingItems] = useState(true);
+  const [totalItems, setTotalItems] = useState<number>(0);
   const [errorItems, setErrorItems] = useState<string | null>(null);
 
   const fetchActiveItems = useCallback(async () => {
@@ -58,6 +59,7 @@ const useItemInventory = (
         throw response.error;
       }
       setItems(response.data || []);
+      setTotalItems(response.count || 0);
     } catch (error) {
       if (error instanceof Error) {
         setErrorItems(error.message || "Error fetching items");
@@ -134,13 +136,19 @@ const useItemInventory = (
             switch (eventType) {
               case "INSERT":
                 if (passesFilters(newRecord)) {
-                  fetchFullActiveItems(newRecord.item_id).then(
-                    (fullActiveItem) => {
-                      if (fullActiveItem) {
-                        setItems([...prev, fullActiveItem]);
+                  const offset = (currentPage - 1) * rowsPerPage;
+                  const limit = offset + rowsPerPage;
+
+                  // Check if the new record falls within the current page's range
+                  if (prev.length < limit) {
+                    fetchFullActiveItems(newRecord.item_id).then(
+                      (fullActiveItem) => {
+                        if (fullActiveItem) {
+                          setItems((prevItems) => [...prevItems, fullActiveItem].slice(0, rowsPerPage));
+                        }
                       }
-                    }
-                  );
+                    );
+                  }
                 }
                 return prev;
 
@@ -193,7 +201,7 @@ const useItemInventory = (
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [filter, isFilterEqual, userId, isUserIdEqual, tags]);
+  }, [filter, isFilterEqual, userId, isUserIdEqual, tags, currentPage, rowsPerPage]);
 
   useEffect(() => {
     fetchActiveItems();
@@ -204,7 +212,7 @@ const useItemInventory = (
     };
   }, [fetchActiveItems, subscribeToChanges]);
 
-  return { items, loadingItems, errorItems };
+  return { items, loadingItems, totalItems, errorItems };
 };
 
 export default useItemInventory;

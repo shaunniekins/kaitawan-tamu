@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Button, Card, CardBody, Image, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import CartHeader from "./headers/CartHeader";
@@ -61,8 +62,8 @@ const CartPage = () => {
                 <div className="flex flex-col px-2 mb-2">
                   <p className="font-semibold">Bidding Confirmation</p>
                   <h6 className="text-[0.6rem] truncate">
-                    *Note: If you sell now, it will select the highest non-expired bidder
-                    and will stop receiving bids
+                    *Note: If you sell now, it will select the highest
+                    non-expired bidder and will stop receiving bids
                   </h6>
                 </div>
                 <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-red-200">
@@ -130,7 +131,6 @@ const CartPage = () => {
                                   //   highestBidOffer
                                   // );
                                   if (!highestBidOffer) return;
-
 
                                   insertInProgressPurchaseData({
                                     item_id: highestBidOffer.item_id, // Check if this is null

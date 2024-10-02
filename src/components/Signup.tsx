@@ -1,6 +1,5 @@
 "use client";
 
-// import { insertNewUser } from "@/app/api/usersIUD";
 import { EyeFilledIcon } from "../../public/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "../../public/icons/EyeSlashFilledIcon";
 import { supabaseAdmin } from "@/utils/supabase";
@@ -55,24 +54,11 @@ const SignupComponent = ({ userType }: SignupComponentProps) => {
     }
 
     setSignUpPending(true);
-    // await signUp(headers, role, formData);
-    // const newUserData = {
-    //   first_name: formData.get("first_name") as string,
-    //   last_name: formData.get("last_name") as string,
-    //   role: role,
-    //   school_id_number: formData.get("id_number") as string,
-    //   year_level: yearLevel,
-    //   email: email,
-    //   password: password,
-    // };
 
-    // const response = await insertNewUser(newUserData);
-
-    /// temporary part here
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       password: password,
-      email_confirm: true, // temporary, it should be false
+      email_confirm: true,
       user_metadata: {
         email: email,
         id_number: formData.get("id_number") as string,
@@ -81,12 +67,10 @@ const SignupComponent = ({ userType }: SignupComponentProps) => {
         password: password,
         year_level: yearLevel,
         role: "member",
-        status: "active", // temporary, it should be pending
+        account_status: "pending",
       },
     });
-    ///
 
-    // if (!response) {
     if (error) {
       alert("Failed to sign up. Please try again.");
       setSignUpPending(false);

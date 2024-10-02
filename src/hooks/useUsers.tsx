@@ -2,33 +2,37 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/utils/supabase";
 import { PostgrestResponse } from "@supabase/supabase-js";
 
-const useUsers = (filter: string) => {
-  const [users, setUsers] = useState<any[]>([]);
+const useUsers = (rowsPerPage: number, currentPage: number, filter: string) => {
+  const [usersData, setUsersData] = useState<any[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [errorUsers, setErrorUsers] = useState<string | null>(null);
 
   const fetchUsers = useCallback(async () => {
     if (!filter) return;
 
-    setLoadingUsers(true);
-    setErrorUsers(null);
+    const action =
+      filter === "approved" || filter === "reapproved" ? "active" : filter;
+
+    const offset = (currentPage - 1) * rowsPerPage;
 
     try {
       let query = supabase
         .from("ViewMemberUsers")
-        .select("*")
-        .order("created_at");
+        .select("*", { count: "exact" })
+        .range(offset, offset + rowsPerPage - 1);
 
-      if (filter) {
-        query = query.eq("status", filter);
+      if (action) {
+        query = query.eq("account_status", action);
       }
 
-      const response = await query;
+      const response: PostgrestResponse<any> = await query;
 
       if (response.error) {
         throw response.error;
       }
-      setUsers(response.data || []);
+      setUsersData(response.data || []);
+      setTotalUsers(response.count || 0);
     } catch (error) {
       if (error instanceof Error) {
         setErrorUsers(error.message || "Error fetching users");
@@ -38,7 +42,7 @@ const useUsers = (filter: string) => {
     } finally {
       setLoadingUsers(false);
     }
-  }, [filter]);
+  }, [filter, currentPage, rowsPerPage]);
 
   const subscribeToChanges = useCallback(() => {
     const channel = supabase
@@ -53,16 +57,30 @@ const useUsers = (filter: string) => {
         (payload) => {
           const { eventType, new: newRecord, old: oldRecord } = payload;
 
-          setUsers((prev) => {
+          const action =
+            filter === "approved" || filter === "reapproved"
+              ? "active"
+              : filter;
+
+          setUsersData((prev) => {
             switch (eventType) {
               case "INSERT":
-                return [...prev, newRecord];
+                if (newRecord.account_status === action) {
+                  const offset = (currentPage - 1) * rowsPerPage;
+                  const limit = offset + rowsPerPage;
+
+                  // Check if the new record falls within the current page's range
+                  if (prev.length < limit) {
+                    return [...prev, newRecord].slice(0, rowsPerPage);
+                  }
+                }
+                return prev;
               case "UPDATE":
                 const updatedUsers = prev
                   .map((user) => {
                     if (user.id === newRecord.id) {
-                      // If the status matches the filter, update the user
-                      if (newRecord.status === filter) {
+                      // If the account_status matches the filter, update the user
+                      if (newRecord.account_status === action) {
                         return newRecord;
                       }
                       // If the status does not match, remove the user from the list
@@ -72,9 +90,9 @@ const useUsers = (filter: string) => {
                   })
                   .filter((user) => user !== null); // Remove null values from the array
 
-                // If the status matches the filter and the user is not in the list, add it
+                // If the account_status matches the filter and the user is not in the list, add it
                 if (
-                  newRecord.status === filter &&
+                  newRecord.account_status === action &&
                   !updatedUsers.some((user) => user.id === newRecord.id)
                 ) {
                   updatedUsers.push(newRecord);
@@ -99,7 +117,7 @@ const useUsers = (filter: string) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [filter]);
+  }, [filter, currentPage, rowsPerPage]);
 
   useEffect(() => {
     fetchUsers();
@@ -110,7 +128,7 @@ const useUsers = (filter: string) => {
     };
   }, [fetchUsers, subscribeToChanges]);
 
-  return { users, loadingUsers, errorUsers };
+  return { usersData, loadingUsers, totalUsers, errorUsers, fetchUsers };
 };
 
 export default useUsers;

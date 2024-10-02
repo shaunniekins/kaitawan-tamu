@@ -1,17 +1,17 @@
-create view "ViewMemberUsers" as
-select
-  id,
-  email,
-  email_confirmed_at, -- use if not yet confirmed
-  raw_user_meta_data ->> 'role' as role,
-  raw_user_meta_data ->> 'status' as status,
-  raw_user_meta_data ->> 'first_name' as first_name,
-  raw_user_meta_data ->> 'last_name' as last_name,
-  raw_user_meta_data ->> 'id_number' as password,
-  raw_user_meta_data ->> 'year_level' as year_level,
-  raw_user_meta_data ->> 'password' as user_password,
-  raw_user_meta_data,
-  created_at
-from
+CREATE VIEW "ViewMemberUsers" AS
+SELECT
+  users.id,
+  users.email,
+  users.raw_user_meta_data ->> 'role' AS role,
+  users.raw_user_meta_data ->> 'account_status' AS account_status,
+  users.raw_user_meta_data ->> 'profile_picture' AS profile_picture,
+  users.raw_user_meta_data ->> 'first_name' AS first_name,
+  users.raw_user_meta_data ->> 'last_name' AS last_name,
+  users.raw_user_meta_data ->> 'id_number' AS id_number,
+  users.raw_user_meta_data ->> 'year_level' AS year_level,
+  users.raw_user_meta_data ->> 'password' AS user_password,
+  users.raw_user_meta_data,
+  users.created_at
+FROM
   auth.users
-where raw_user_meta_data ->> 'role' = 'member'
+WHERE users.raw_user_meta_data ->> 'role' = 'member';
