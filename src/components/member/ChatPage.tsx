@@ -5,20 +5,16 @@ import { RootState } from "@/app/reduxUtils/store";
 import { resizeImage } from "@/utils/compUtils";
 import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import SellHeader from "./headers/SellHeader";
 import {
   Avatar,
   Button,
-  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Radio,
-  RadioGroup,
-  Select,
-  SelectItem,
   Spinner,
   Textarea,
 } from "@nextui-org/react";

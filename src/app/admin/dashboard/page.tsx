@@ -34,7 +34,7 @@ export default function AdminDashboard() {
   return (
     <>
       {isSigningOut ? (
-        <div className="box justify-center">
+        <div className="h-[100svh] w-screen flex justify-center items-center">
           <Spinner color="success" />
         </div>
       ) : (
