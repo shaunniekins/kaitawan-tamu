@@ -3,7 +3,14 @@
 import useTotalItems from "@/hooks/useTotalItems";
 import useTotalUsers from "@/hooks/useTotalUsers";
 import { supabaseAdmin } from "@/utils/supabase";
-import { Button, Input } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  Spinner,
+} from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import {
   MdEdit,
@@ -15,6 +22,7 @@ import { RiAuctionLine } from "react-icons/ri";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { fetchAcademicYear, updateAcademicYear } from "@/app/api/academicYearU";
+import useUserYearLevel from "@/hooks/useUserYearLevel";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -27,6 +35,16 @@ const AdminDashboardComponent = () => {
   const [endingYear, setEndingYear] = useState<number | null>(null);
   const [academicYearId, setAcademicYearId] = useState<number | null>(null);
 
+  const [tempStartingYear, setTempStartingYear] = useState<number | null>(null);
+  const [tempEndingYear, setTempEndingYear] = useState<number | null>(null);
+
+  const { usersData, fetchUsers } = useUserYearLevel();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // useEffect(() => {
+  //   console.log("usersData: ", usersData);
+  // }, usersData);
+
   useEffect(() => {
     const getAcademicYear = async () => {
       const academicYear = await fetchAcademicYear();
@@ -34,6 +52,9 @@ const AdminDashboardComponent = () => {
         setStartingYear(academicYear.starting_year);
         setEndingYear(academicYear.ending_year);
         setAcademicYearId(academicYear.id);
+
+        setTempStartingYear(academicYear.starting_year);
+        setTempEndingYear(academicYear.ending_year);
       }
     };
 
@@ -44,16 +65,54 @@ const AdminDashboardComponent = () => {
     if (
       academicYearId !== null &&
       startingYear !== null &&
-      endingYear !== null
+      endingYear !== null &&
+      startingYear < endingYear &&
+      endingYear - startingYear === 1
     ) {
-      const response = await updateAcademicYear(
-        startingYear,
-        endingYear,
-        academicYearId
+      const isConfirmed = window.confirm(
+        "Are you sure you want to update the academic year?"
       );
-      if (response) {
-        setIsUpdating(false);
+
+      if (isConfirmed) {
+        const response = await updateAcademicYear(
+          startingYear,
+          endingYear,
+          academicYearId
+        );
+
+        if (response) {
+          setIsProcessing(true);
+          if (tempStartingYear !== null && tempEndingYear !== null) {
+            const yearDifference = Math.abs(tempEndingYear - endingYear);
+            const isDecreasing = tempEndingYear > endingYear;
+            const iterations = Math.abs(yearDifference);
+
+            for (const user of usersData) {
+              const currentYearLevel = parseInt(user.year_level, 10);
+              const newYearLevel = isDecreasing
+                ? currentYearLevel - iterations
+                : currentYearLevel + iterations;
+              const { data: updatedUser, error } =
+                await supabaseAdmin.auth.admin.updateUserById(user.id, {
+                  user_metadata: { year_level: newYearLevel },
+                });
+
+              if (error) {
+                console.error(`Error updating user ${user.id}:`, error);
+              }
+            }
+          } else {
+            console.error("Temporary starting or ending year is null");
+          }
+          setIsUpdating(false);
+          setIsProcessing(false);
+          setTempStartingYear(startingYear);
+          setTempEndingYear(endingYear);
+          fetchUsers();
+        }
       }
+    } else {
+      console.error("Invalid academic year range");
     }
   };
 
@@ -82,6 +141,27 @@ const AdminDashboardComponent = () => {
 
   return (
     <>
+      <Modal
+        size="sm"
+        backdrop="blur"
+        placement="center"
+        isDismissable={false}
+        hideCloseButton={true}
+        isOpen={isProcessing}
+        onOpenChange={setIsProcessing}
+        // className="h-32"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalBody className="flex justify-center items-center py-5 gap-5">
+                <h5>Please wait while the process completes...</h5>
+                <Spinner color="success" />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
       <div className="w-full h-full flex justify-start flex-col overflow-y-auto">
         <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-2">
           <div className="col-span-2 md:col-span-4 mb-5">
@@ -98,7 +178,13 @@ const AdminDashboardComponent = () => {
                     : ""
                 }
                 readOnly={!isUpdating}
-                onChange={(e) => setStartingYear(parseInt(e.target.value, 10))}
+                onChange={(e) => {
+                  const newStartingYear = parseInt(e.target.value, 10);
+                  if (newStartingYear !== startingYear) {
+                    setStartingYear(newStartingYear);
+                    setEndingYear(newStartingYear + 1);
+                  }
+                }}
               />
               -
               <Input
@@ -111,22 +197,46 @@ const AdminDashboardComponent = () => {
                     : ""
                 }
                 readOnly={!isUpdating}
-                onChange={(e) => setEndingYear(parseInt(e.target.value, 10))}
-              />
-              <Button
-                color="success"
-                className="text-white"
-                startContent={isUpdating ? null : <MdEdit />}
-                onClick={() => {
-                  if (isUpdating) {
-                    handleUpdate();
-                  } else {
-                    setIsUpdating(true);
+                onChange={(e) => {
+                  const newEndingYear = parseInt(e.target.value, 10);
+                  if (newEndingYear !== endingYear) {
+                    setEndingYear(newEndingYear);
+                    setStartingYear(newEndingYear - 1);
                   }
                 }}
-              >
-                {isUpdating ? "Save" : "Update"}
-              </Button>
+              />
+              <div className="flex flex-col md:flex-row gap-3">
+                <Button
+                  color="success"
+                  className="text-white"
+                  startContent={isUpdating ? null : <MdEdit />}
+                  onClick={() => {
+                    if (isUpdating) {
+                      handleUpdate();
+                    } else {
+                      setIsUpdating(true);
+                    }
+                  }}
+                  disabled={
+                    startingYear === null ||
+                    endingYear === null ||
+                    startingYear !== endingYear - 1
+                  }
+                >
+                  {isUpdating ? "Save" : "Update"}
+                </Button>
+                <Button
+                  color="secondary"
+                  className={`${!isUpdating && "hidden"} text-white`}
+                  onClick={() => {
+                    setIsUpdating(false);
+                    setStartingYear(tempStartingYear);
+                    setEndingYear(tempEndingYear);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
           </div>
           <CardStats
