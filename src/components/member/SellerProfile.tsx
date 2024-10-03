@@ -13,7 +13,6 @@ import {
   Image,
   Spinner,
 } from "@nextui-org/react";
-import SellerProfileItemHeader from "./headers/SellerProfileItemHeader";
 import useItemInventory from "@/hooks/useItemInventory";
 import useSellerItemInventory from "@/hooks/useSellerItemInventory";
 import { MdOutlineSell } from "react-icons/md";
@@ -42,7 +41,6 @@ const SellerProfile = ({ user_id }: SellerProfileProps) => {
   useEffect(() => {
     setIsLoading(loadingSeller);
     setSeller(sellerData);
-    console.log("items", items);
   }, [loadingSeller]);
 
   //   useEffect(() => {
@@ -52,7 +50,6 @@ const SellerProfile = ({ user_id }: SellerProfileProps) => {
   return (
     <>
       <div className="w-full h-full flex flex-col items-center">
-        <SellerProfileItemHeader />
         {isLoading && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <Spinner color="success" />
@@ -81,7 +78,9 @@ const SellerProfile = ({ user_id }: SellerProfileProps) => {
                 </div>
               </header>
               <div className="h-full px-2 overflow-y-auto relative">
-                <h3 className="font-semibold text-lg pt-5 pb-4">Seller List Items</h3>
+                <h3 className="font-semibold text-lg pt-5 pb-4">
+                  Seller List Items
+                </h3>
                 {items.length === 0 ? (
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <p className="text-gray-500">No items available</p>

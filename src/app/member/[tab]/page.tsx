@@ -2,6 +2,7 @@
 import CartPage from "@/components/member/CartPage";
 import ChatPage from "@/components/member/ChatPage";
 import ExplorePage from "@/components/member/ExplorePage";
+import LikesPage from "@/components/member/LikesPage";
 import ListingPage from "@/components/member/ListingPage";
 import ProfilePage from "@/components/member/ProfilePage";
 import SellPage from "@/components/member/SellPage";
@@ -38,6 +39,9 @@ export default function TabContent() {
     case "/member/account":
       activeComponent = <ProfilePage />;
       //   activeComponent = <div>ProfilePage</div>;
+      break;
+    case "/member/likes":
+      activeComponent = <LikesPage />;
       break;
     default:
       activeComponent = "hey";

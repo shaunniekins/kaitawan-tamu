@@ -5,6 +5,7 @@ import { RootState } from "@/app/reduxUtils/store";
 import { resizeImage } from "@/utils/compUtils";
 import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import SellHeader from "./headers/SellHeader";

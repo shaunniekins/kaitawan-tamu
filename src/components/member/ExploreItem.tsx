@@ -6,7 +6,6 @@ import { RootState } from "@/app/reduxUtils/store";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
-import ExploreItemHeader from "./headers/ExploreItemHeader";
 import {
   Avatar,
   Badge,
@@ -44,6 +43,8 @@ import {
 } from "@/app/api/biddingTransactionIUD";
 import { insertInProgressPurchaseData } from "@/app/api/inProgressPurchasesIUD";
 import useSingleInProgressPurchase from "@/hooks/useSingleInProgressPurchase";
+import useLikedItems from "@/hooks/useLikedItems";
+import { deleteLikedItem, insertLikedItem } from "@/app/api/likedItemsIUD";
 
 interface ExploreItemProps {
   item_id: number;
@@ -75,6 +76,9 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
   const { itemInProgress, loadingItemInProgress, errorItemInProgress } =
     useSingleInProgressPurchase(item_id);
 
+  const { likedItems, loadingLikedItems, totalLikedItems, errorLikedItems } =
+    useLikedItems(user?.id, item_id);
+
   // const [itemInProgress, setItemInProgress] = useState<any>(null);
 
   useEffect(() => {
@@ -100,6 +104,27 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
   // useEffect(() => {
   //   console.log("item: ", item.item_selling_type);
   // }, [item]);
+
+  useEffect(() => {
+    if (likedItems.length > 0) {
+      setIsLikeClicked(true);
+    } else {
+      setIsLikeClicked(false);
+    }
+  }, [likedItems]);
+
+  const handleLikeClick = async () => {
+    setIsLikeClicked(!isLikeClicked);
+
+    if (!isLikeClicked) {
+      await insertLikedItem({ liker_id: user?.id, item_id });
+    } else {
+      const likedItem = likedItems.find((item) => item.item_id === item_id);
+      if (likedItem) {
+        await deleteLikedItem(likedItem.liked_id);
+      }
+    }
+  };
 
   // auction
   const [openBidModal, setOpenBidModal] = useState(false);
@@ -287,7 +312,6 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
         </ModalContent>
       </Modal>
       <div className="w-full h-full flex flex-col items-center">
-        <ExploreItemHeader />
         {isLoading && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <Spinner color="success" />
@@ -295,7 +319,7 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
         )}
         {!isLoading && (
           <>
-            <div className="w-full flex flex-col flex-grow overflow-y-auto">
+            <div className="w-full flex flex-col flex-grow overflow-y-auto mb-32">
               <div className="w-full grid grid-cols-1 lg:grid-cols-2 ">
                 <div className="flex flex-col mb-0">
                   {/* product image */}
@@ -360,9 +384,7 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                       disableAnimation
                       radius="sm"
                       className="p-0 m-0"
-                      onClick={() => {
-                        setIsLikeClicked(!isLikeClicked);
-                      }}
+                      onClick={handleLikeClick}
                     >
                       {isLikeClicked ? (
                         <IoIosHeart color="red" size={30} />
@@ -557,8 +579,8 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
               </div>
             </div>
 
-            {/* footer */}
-            <div className="sticky lg:hidden bottom-0 w-full z-50 bg-yello-600 shadow-lg">
+            {/* footer: sticky */}
+            <div className="absolute lg:hidden bottom-0 w-full z-50 shadow-lg bg-white">
               <div className="max-w-6xl mx-auto flex justify-around items-center gap-5 px-2 border-t-3 py-1">
                 <button
                   className="flex flex-col items-center"

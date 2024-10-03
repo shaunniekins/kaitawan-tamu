@@ -1,89 +1,71 @@
 "use client";
 
 import { RootState } from "@/app/reduxUtils/store";
-import useItemInventory from "@/hooks/useItemInventory";
+import useSellerUsers from "@/hooks/useSellerUsers";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
+  Avatar,
   Card,
   CardBody,
   CardFooter,
-  Chip,
   Image,
   Spinner,
-  Tab,
-  Tabs,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { MdOutlineSell } from "react-icons/md";
 import { RiAuctionLine } from "react-icons/ri";
+import useLikedItems from "@/hooks/useLikedItems";
 
-const ListingPage = () => {
+const LikesPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
 
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("offer");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const rowsPerPage = 200;
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const { items, loadingItems, errorItems } = useItemInventory(
-    rowsPerPage,
-    currentPage,
-    "sold",
-    activeTab === "sold" ? true : false,
-    user?.id,
-    true,
-    undefined
-  );
+  const { likedItems, loadingLikedItems, totalLikedItems, errorLikedItems } =
+    useLikedItems(user?.id);
 
   useEffect(() => {
-    setIsLoading(loadingItems);
-  }, [loadingItems]);
+    setIsLoading(loadingLikedItems);
+  }, [loadingLikedItems]);
 
-  const tabs = [
-    { id: "offer", label: "Offer" },
-    { id: "sold", label: "Sold" },
-  ];
+  //   useEffect(() => {
+  //     console.log("items", items);
+  //   }, [items]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
-      {isLoading && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <Spinner color="success" />
-        </div>
-      )}
-      {!isLoading && (
-        <div className="w-full flex flex-col flex-grow mt-5">
-          {/* <div className="w-full flex-col"> */}
-          <div className="w-full flex flex-col">
-            <Tabs
-              aria-label="Dynamic tabs"
-              items={tabs}
-              color="success"
-              variant="underlined"
-              fullWidth
-              selectedKey={activeTab}
-              radius="none"
-              onSelectionChange={(key) => setActiveTab(key.toString())}
-            >
-              {tabs.map((tab) => (
-                <Tab key={tab.id} title={tab.label}>
-                  {items.length === 0 ? (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                      <p className="text-gray-500">No items available</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
-                      {items.map((item) => (
-                        <Card
-                          key={item.item_id}
-                          className="rounded-none bg-none shadow-none"
-                        >
+    <>
+      <div className="w-full h-full flex flex-col items-center">
+        {isLoading && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <Spinner color="success" />
+          </div>
+        )}
+        {!isLoading && likedItems && (
+          <>
+            <div className="w-full flex flex-col flex-grow overflow-y-auto mt-5">
+              <div className="h-full px-2 overflow-y-auto relative">
+                {likedItems.length === 0 ? (
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <p className="text-gray-500 text-center">
+                      You haven't liked anything yet.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3">
+                    {likedItems.map((item: any) => (
+                      <div
+                        key={item.item_id}
+                        onClick={() => {
+                          setIsLoading(true);
+                          return router.push(`/member/explore/${item.item_id}`);
+                        }}
+                      >
+                        <Card className="rounded-none bg-none shadow-none">
                           <CardBody className="p-0 w-full">
                             <Image
-                              alt="Card background"
+                              alt="Item Image"
                               className="object-cover rounded-none w-full rounded-b-md aspect-square"
                               src={
                                 item.image_urls && item.image_urls.length > 0
@@ -126,22 +108,23 @@ const ListingPage = () => {
                                   : ""
                               }`}
                             >
-                              {item.item_status}
+                              {item.item_status === "approved"
+                                ? "Available"
+                                : item.item_status}
                             </h6>
                           </CardFooter>
                         </Card>
-                      ))}
-                    </div>
-                  )}
-                </Tab>
-              ))}
-            </Tabs>
-            {/* </div> */}
-          </div>
-        </div>
-      )}
-    </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
-export default ListingPage;
+export default LikesPage;

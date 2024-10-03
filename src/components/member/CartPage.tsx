@@ -3,7 +3,6 @@
 import React from "react";
 import { Button, Card, CardBody, Image, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import CartHeader from "./headers/CartHeader";
 import useBiddingTransactionData from "@/hooks/useBiddingTransactionDataForCart";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/reduxUtils/store";
@@ -46,7 +45,6 @@ const CartPage = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <CartHeader />
       {isLoading && (
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <Spinner color="success" />
@@ -55,7 +53,7 @@ const CartPage = () => {
       {!isLoading && (
         <div className="w-full flex flex-col flex-grow">
           {/* <div className="w-full flex flex-col overflow-x-hidden"> */}
-          <div className="w-full flex flex-col">
+          <div className="w-full flex flex-col mt-5">
             {/* Auction */}
             {items.length !== 0 && (
               <>
@@ -66,7 +64,7 @@ const CartPage = () => {
                     non-expired bidder and will stop receiving bids
                   </h6>
                 </div>
-                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-red-200">
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {items.map((item) => (
                     <div
                       key={item.item_id} // Ensure each item has a unique key
