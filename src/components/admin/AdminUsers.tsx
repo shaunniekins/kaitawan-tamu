@@ -42,42 +42,42 @@ const AdminUserComponent = () => {
 
       if (error) throw error;
 
-      // if (action === "active" && user) {
-      //   const emailData = {
-      //     email: selectedUser.email,
-      //     recipient_name: `${selectedUser.first_name} ${selectedUser.last_name}`,
-      //     subject: "Account Approved",
-      //     message: `
-      // Greetings!
+      if (action === "active" && user) {
+        const emailData = {
+          email: selectedUser.email,
+          recipient_name: `${selectedUser.first_name} ${selectedUser.last_name}`,
+          subject: "Account Approved",
+          message: `
+Greetings!
 
-      // We are pleased to inform you that your account associated with the email ${selectedUser.email} has been approved. You can now sign in and access your account.
+We are pleased to inform you that your account associated with the email ${selectedUser.email} has been approved. You can now sign in and access your account.
 
-      // Thank you!
+Thank you!
 
-      // Best regards,
-      // Kaitawan Tamu Team`,
-      //   };
+Best regards,
+Kaitawan Tamu Team`,
+        };
 
-      //   try {
-      //     const response = await fetch("/api/send-email", {
-      //       method: "POST",
-      //       headers: { "Content-Type": "application/json" },
-      //       body: JSON.stringify(emailData),
-      //     });
+        try {
+          const response = await fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(emailData),
+          });
 
-      //     const data = await response.json();
+          const data = await response.json();
 
-      //     if (response.ok) {
-      //       console.log("Email sent successfully!");
-      //     } else {
-      //       console.log(
-      //         `Failed to send email: ${data?.error || "Unknown error"}`
-      //       );
-      //     }
-      //   } catch (error) {
-      //     console.error("Error sending email:", error);
-      //   }
-      // }
+          if (response.ok) {
+            console.log("Email sent successfully!");
+          } else {
+            console.log(
+              `Failed to send email: ${data?.error || "Unknown error"}`
+            );
+          }
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
+      }
 
       fetchUsers();
     } catch (error) {

@@ -53,6 +53,11 @@ const SignupComponent = ({ userType }: SignupComponentProps) => {
       return;
     }
 
+    if (yearLevel >= 7) {
+      alert("You cannot create an account if your year level is 7 or higher");
+      return;
+    }
+
     setSignUpPending(true);
 
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
