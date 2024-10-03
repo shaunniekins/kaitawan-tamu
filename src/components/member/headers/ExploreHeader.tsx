@@ -31,7 +31,7 @@ const ExploreHeader = () => {
           />
           {/* <span className="text-lg hidden lg:block">Kaitawan Tamu</span> */}
         </Link>
-        <Input
+        {/* <Input
           isClearable
           onClear={() => setSearchValue("")}
           radius="lg"
@@ -64,7 +64,7 @@ const ExploreHeader = () => {
           startContent={
             <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
           }
-        />
+        /> */}
 
         <div className="flex flex-col justify-end items-end">
           <div className="flex items-center gap-1">
