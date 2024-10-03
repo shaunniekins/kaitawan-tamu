@@ -49,7 +49,7 @@ const LikesPage = () => {
                 {likedItems.length === 0 ? (
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <p className="text-gray-500 text-center">
-                      You haven't liked anything yet.
+                      You haven&apos;t liked anything yet.
                     </p>
                   </div>
                 ) : (
