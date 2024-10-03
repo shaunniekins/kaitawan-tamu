@@ -125,11 +125,6 @@ const CartPage = () => {
                                 color="secondary"
                                 className="text-white"
                                 onClick={() => {
-                                  // setIsLikeClicked(!isLikeClicked);
-                                  // console.log(
-                                  //   "highestBidOffer",
-                                  //   highestBidOffer
-                                  // );
                                   if (!highestBidOffer) return;
 
                                   insertInProgressPurchaseData({
@@ -139,33 +134,11 @@ const CartPage = () => {
                                     progress_status: "pending",
                                     item_selling_type: "auction",
                                   });
-
-                                  // setItems((prev) =>
-                                  //   prev.filter(
-                                  //     (item) =>
-                                  //       item.item_id !==
-                                  //       highestBidOffer.item_list_id
-                                  //   )
-                                  // );
                                 }}
                               >
                                 Sell Now!
                               </Button>
                             </div>
-
-                            {/* <div className="flex gap-1">
-                              <Avatar
-                                src="https://fakeimg.pl/500x500?text=user&font=bebas"
-                                className="w-4 h-4 text-xs"
-                                disableAnimation 
-                              />
-                              <div className="flex flex-col text-sm truncate">
-                                <h6 className="font-semibold">
-                                  {item.seller_first_name}{" "}
-                                  {item.seller_last_name}
-                                </h6>
-                              </div>
-                            </div> */}
                           </div>
                         </CardBody>
                       </Card>

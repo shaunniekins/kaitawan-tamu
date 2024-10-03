@@ -120,6 +120,13 @@ const ChatPage = () => {
                               ? `${item.receiver_raw_user_meta_data.first_name} ${item.receiver_raw_user_meta_data.last_name}`
                               : "Unknown";
 
+                          const displayImage =
+                            item.sender_id !== user.id
+                              ? item.sender_raw_user_meta_data.profile_picture
+                              : item.receiver_id !== user.id
+                              ? item.receiver_raw_user_meta_data.profile_picture
+                              : "";
+
                           // Determine if the user is the latest messager
                           const isUserLatestMessager =
                             item.sender_id === user.id;
@@ -140,13 +147,21 @@ const ChatPage = () => {
                               }}
                             >
                               <span className="w-full flex items-center gap-2">
-                                <Avatar
-                                  size="sm"
-                                  name={displayName}
-                                  showFallback
-                                  disableAnimation
-                                  // src="https://images.unsplash.com/broken"
-                                />
+                                {!displayImage ? (
+                                  <Avatar
+                                    size="sm"
+                                    name={displayName}
+                                    showFallback
+                                    disableAnimation
+                                  />
+                                ) : (
+                                  <Avatar
+                                    size="sm"
+                                    src={displayImage}
+                                    showFallback
+                                    disableAnimation
+                                  />
+                                )}
                                 <div className="flex flex-col justify-center truncate">
                                   <span className="truncate text-lg">
                                     {displayName}
@@ -228,6 +243,10 @@ const ChatPage = () => {
                             ? `${message.sender_first_name} ${message.sender_last_name}`
                             : `${message.receiver_first_name} ${message.receiver_last_name}`;
 
+                          const partnerProfilePicture = isSender
+                            ? message.sender_profile_picture
+                            : message.receiver_profile_picture;
+
                           return (
                             <div
                               key={message.chat_message_id}
@@ -235,13 +254,20 @@ const ChatPage = () => {
                                 isSender ? "justify-end" : ""
                               }`}
                             >
-                              {!isSender && (
-                                <Avatar
-                                  name={partnerDisplayName}
-                                  showFallback
-                                  disableAnimation
-                                />
-                              )}
+                              {!isSender &&
+                                (!partnerProfilePicture ? (
+                                  <Avatar
+                                    name={partnerDisplayName}
+                                    showFallback
+                                    disableAnimation
+                                  />
+                                ) : (
+                                  <Avatar
+                                    src={partnerProfilePicture}
+                                    showFallback
+                                    disableAnimation
+                                  />
+                                ))}
                               <div
                                 className={`message py-2 ${
                                   isSender

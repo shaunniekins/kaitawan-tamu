@@ -1,8 +1,6 @@
-create view
-  "ViewFullItemInventory" as
-select
+CREATE VIEW "ViewFullItemInventory" AS
+SELECT
   i.item_id,
-  i.seller_id,
   i.item_name,
   i.item_price,
   i.item_category,
@@ -11,19 +9,26 @@ select
   i.item_status,
   i.item_selling_type,
   i.image_urls,
-  i.created_at as item_created_at,
-  coalesce(
+  i.created_at AS item_created_at,
+
+  i.seller_id,
+   COALESCE(
+    u.raw_user_meta_data ->> 'profile_picture'::text,
+    'Unknown'::text
+  ) AS seller_profile_picture,
+  COALESCE(
     u.raw_user_meta_data ->> 'first_name'::text,
     'Unknown'::text
-  ) as seller_first_name,
-  coalesce(
+  ) AS seller_first_name,
+  COALESCE(
     u.raw_user_meta_data ->> 'last_name'::text,
     'Unknown'::text
-  ) as seller_last_name,
-  coalesce(
+  ) AS seller_last_name,
+  COALESCE(
     u.raw_user_meta_data ->> 'email'::text,
     'Unknown'::text
-  ) as seller_email
-from
+  ) AS seller_email
+ 
+FROM
   "ItemInventory" i
-  join auth.users u on i.seller_id = u.id
+  JOIN auth.users u ON i.seller_id = u.id;

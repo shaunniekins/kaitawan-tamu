@@ -7,12 +7,14 @@ SELECT
 
     -- Sender details
     cm.sender_id,
+    COALESCE(s.raw_user_meta_data ->> 'profile_picture', 'Unknown') AS sender_profile_picture,
     COALESCE(s.raw_user_meta_data ->> 'first_name', 'Unknown') AS sender_first_name,
     COALESCE(s.raw_user_meta_data ->> 'last_name', 'Unknown') AS sender_last_name,
     COALESCE(s.raw_user_meta_data ->> 'email', 'Unknown') AS sender_email,
 
     -- Receiver details
     cm.receiver_id,
+    COALESCE(r.raw_user_meta_data ->> 'profile_picture', 'Unknown') AS receiver_profile_picture,
     COALESCE(r.raw_user_meta_data ->> 'first_name', 'Unknown') AS receiver_first_name,
     COALESCE(r.raw_user_meta_data ->> 'last_name', 'Unknown') AS receiver_last_name,
     COALESCE(r.raw_user_meta_data ->> 'email', 'Unknown') AS receiver_email

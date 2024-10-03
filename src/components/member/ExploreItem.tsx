@@ -384,7 +384,7 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                   <div className="w-full bg-gray-50 flex justify-between py-3 mt-3">
                     <div className="flex gap-1">
                       <Avatar
-                        src="https://fakeimg.pl/500x500?text=user&font=bebas"
+                        src={item?.seller_profile_picture}
                         radius="sm"
                         disableAnimation
                       />
@@ -567,7 +567,7 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                   }}
                 >
                   <Avatar
-                    src="https://fakeimg.pl/500x500?text=user&font=bebas"
+                    src={item.seller_profile_picture}
                     className="w-7 h-7 text-sm"
                     disableAnimation
                   />

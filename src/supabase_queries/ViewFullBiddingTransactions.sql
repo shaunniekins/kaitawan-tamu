@@ -10,6 +10,10 @@ select
 
   b.bidder_id,
   coalesce(
+    u.raw_user_meta_data ->> 'profile_picture'::text,
+    'Unknown'::text
+  ) as bidder_profile_picture,
+  coalesce(
     u.raw_user_meta_data ->> 'first_name'::text,
     'Unknown'::text
   ) as bidder_first_name,
@@ -23,6 +27,10 @@ select
   ) as bidder_email,
 
   i.seller_id,
+  coalesce(
+    s.raw_user_meta_data ->> 'profile_picture'::text,
+    'Unknown'::text
+  ) as seller_profile_picture,
   coalesce(
     s.raw_user_meta_data ->> 'first_name'::text,
     'Unknown'::text

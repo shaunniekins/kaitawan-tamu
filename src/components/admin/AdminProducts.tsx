@@ -109,7 +109,7 @@ const AdminProductsComponent = () => {
 
                     <div className="flex gap-1">
                       <Avatar
-                        src="https://fakeimg.pl/500x500?text=user&font=bebas"
+                        src={selectedItem.seller_profile_picture}
                         className="w-4 h-4 text-xs"
                         disableAnimation
                       />
@@ -222,7 +222,7 @@ const AdminProductsComponent = () => {
 
                         <div className="flex gap-1">
                           <Avatar
-                            src="https://fakeimg.pl/500x500?text=user&font=bebas"
+                            src={item.seller_profile_picture}
                             className="w-4 h-4 text-xs"
                             disableAnimation
                           />
