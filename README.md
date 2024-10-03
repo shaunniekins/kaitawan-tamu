@@ -1,61 +1,91 @@
+
 # Kaitawan Tamu
+
+A fully functional Next.js project integrated with Supabase for authentication, leveraging Tailwind CSS for styling and NextUI for enhanced UI components. This project seamlessly supports both Client and Server Components across the Next.js stack.
 
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
+- **Full Next.js Integration**  
+  Works seamlessly across the entire Next.js stack:
+  - **App Router**: Compatible with the latest routing paradigm in Next.js.
+  - **Middleware**: Add custom logic at various stages of the request lifecycle.
+  - **Client & Server Components**: Works flawlessly with both Next.js Client and Server Components.
   - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+  
+- **Supabase SSR**  
+  Leverages the `supabase-ssr` package to configure Supabase Auth using cookies for seamless user session management across:
+  - Client Components
+  - Server Components
+  - Route Handlers
+  - Middleware
+
+- **Tailwind CSS & NextUI Styling**  
+  Enjoy responsive, customizable styles using [Tailwind CSS](https://tailwindcss.com) and pre-built components from [NextUI](https://nextui.org).
+
+- **Easy Deployment**  
+  Simplified deployment using the [Supabase Vercel Integration](#deploy-to-vercel), where environment variables are automatically configured.
 
 ## Deploy to Vercel
 
-Vercel deployment will guide you through creating a Supabase account and project.
+Deploy this project on Vercel, and you'll be guided through the process of setting up a Supabase account and project. After the installation of the Supabase integration, all necessary environment variables will be automatically assigned to your Vercel project for a fully functional deployment.
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This%20starter%20configures%20Supabase%20Auth%20to%20use%20cookies%2C%20making%20the%20user's%20session%20available%20throughout%20the%20entire%20Next.js%20app%20-%20Client%20Components%2C%20Server%20Components%2C%20Route%20Handlers%2C%20Server%20Actions%20and%20Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6)
+The above button will:
+1. Clone this repository to your GitHub account.
+2. Set up a new Supabase project and automatically configure environment variables for deployment.
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+Alternatively, follow the steps below to set up and run the project locally.
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+## Clone and Run Locally
 
-## Clone and run locally
+To run this project locally, follow these steps:
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+1. **Set up Supabase**  
+   You will first need a Supabase project. Sign up or log in to create one via the [Supabase dashboard](https://database.new).
 
-2. Create a Next.js app using the Supabase Starter template npx command
-
-   ```bash
-   npx create-next-app -e with-supabase
-   ```
-
-3. Use `cd` to change into the app's directory
+2. **Clone the repository**  
+   Open your terminal and run the following command to clone the repository:
 
    ```bash
-   cd name-of-new-app
+   git clone <repository-url>
    ```
 
-4. Rename `.env.local.example` to `.env.local` and update the following:
+3. **Navigate into the project directory**  
+   Change into the project folder:
 
+   ```bash
+   cd <project-directory>
    ```
-   NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=[INSERT SUPABASE ROLE KEY]
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
+
+4. **Set up environment variables**  
+   Create a `.env.local` file in the root directory and add the following environment variables:
+
+   ```bash
+   NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=<your-supabase-role-key>
+   NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+   MJ_APIKEY_PUBLIC=<your-mailjet-public-key>
+   MJ_APIKEY_PRIVATE=<your-mailjet-private-key>
+   MJ_EMAIL_REGISTERED=<your-mailjet-registered-email>
+   NEXT_PUBLIC_GOOGLE_API_KEY=<your-google-api-key>
    ```
 
-   The `NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
+   These keys can be found in the Supabase project's **API settings**.
 
-5. You can now run the Next.js local development server:
+5. **Install dependencies**  
+   Run the following command to install the necessary dependencies:
+
+   ```bash
+   npm install
+   ```
+
+6. **Start the development server**  
+   Run the following command to start the Next.js development server:
 
    ```bash
    npm run dev
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+7. **Access the application**  
+   Open your browser and navigate to `http://localhost:3000` to view the application running locally.

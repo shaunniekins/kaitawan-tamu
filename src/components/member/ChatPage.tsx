@@ -1,14 +1,10 @@
 "use client";
 
-import { insertItemInventoryData } from "@/app/api/itemInventoryIUD";
 import { RootState } from "@/app/reduxUtils/store";
-import { resizeImage } from "@/utils/compUtils";
-import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import SellHeader from "./headers/SellHeader";
 import {
   Avatar,
   Button,
@@ -18,12 +14,11 @@ import {
   Spinner,
   Textarea,
 } from "@nextui-org/react";
-import ImageSelector from "../ImageSelector";
 import useChatMessages from "@/hooks/useChatMessages";
 import { insertChatMessage } from "@/app/api/chatMessagesIUD";
 import useChatHeaders from "@/hooks/useChatHeaders";
 import ChatHeader from "./headers/ChatHeader";
-import { IoChevronBack } from "react-icons/io5";
+import { IoArrowBack, IoChevronBack } from "react-icons/io5";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoMdTrash } from "react-icons/io";
 
@@ -65,7 +60,10 @@ const ChatPage = () => {
     await insertChatMessage({
       message: messageInput,
       sender_id: user.id,
-      receiver_id: selectedConvo.partner_id,
+      receiver_id:
+        selectedConvo.receiver_id === user.id
+          ? selectedConvo.sender_id
+          : selectedConvo.receiver_id,
     });
     setMessageInput("");
   };
@@ -86,6 +84,14 @@ const ChatPage = () => {
     }
   }, [selectedConvo, user.id]);
 
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, selectedConvo]);
+
   return (
     <>
       <div className="w-full h-full flex flex-col items-center">
@@ -97,22 +103,23 @@ const ChatPage = () => {
         )}
         {!isLoading && (
           <>
-            <div className="w-full flex flex-col flex-grow px-2">
-              <div className="w-full flex flex-col gap-6 py-3 lg:py-2 mt-3 flex-grow">
-                <div className="w-full col-span-full grid grid-cols-1 lg:grid-cols-3 h-full">
-                  {/* Chat Headers */}
-                  <div
-                    className={`${
-                      currentView !== "headers" ? "hidden lg:block" : "block"
-                    } h-full border border-green-800 rounded-lg overflow-y-auto`}
-                  >
-                    <ul className="h-full flex flex-col pb-5">
-                      {chatHeaders.length === 0 ? (
+            <div className="flex flex-col h-full w-full overflow-hidden">
+              <div className="h-full w-full grid grid-cols-1 lg:grid-cols-[1fr,1.5fr]">
+                {/* headers */}
+                <div
+                  className={`${
+                    currentView === "headers" ? "block" : "hidden"
+                  } lg:block h-full w-full p-4 overflow-y-auto`}
+                >
+                  <div className="h-full w-full flex flex-col rounded-xl border border-green-500 bg-green-300">
+                    <ul className="h-full w-full flex flex-col overflow-y-auto">
+                      {chatHeaders && chatHeaders.length === 0 ? (
                         <li className="flex justify-center items-center h-full">
                           No chat history
                         </li>
-                      ) : user ? (
-                        chatHeaders.map((item, index) => {
+                      ) : (
+                        user &&
+                        chatHeaders.map((item: any, index: any) => {
                           const displayName =
                             item.sender_id !== user.id
                               ? `${item.sender_raw_user_meta_data.first_name} ${item.sender_raw_user_meta_data.last_name}`
@@ -133,35 +140,42 @@ const ChatPage = () => {
 
                           return (
                             <li
-                              key={index}
+                              key={item.chat_message_id}
                               className={`${
                                 selectedConvo &&
                                 selectedConvo.chat_message_id ===
                                   item.chat_message_id
-                                  ? "lg:bg-green-600 hover:lg:bg-green-600"
-                                  : "hover:lg:bg-green-700"
-                              } flex items-center py-2 px-3 text-sm rounded-md cursor-pointer w-full relative group`}
+                                  ? "lg:bg-green-600 hover:lg:bg-green-600 lg:text-white hover:lg:text-white"
+                                  : "hover:lg:bg-green-700 hover:lg:text-white"
+                              } flex items-center py-2 px-3 text-sm rounded-md cursor-pointer w-full relative`}
                               onClick={() => {
                                 setSelectedConvo(item);
-                                handleChatHeaderClick(item.partner_id);
+                                handleChatHeaderClick(
+                                  item.sender_id === user.id
+                                    ? item.receiver_id
+                                    : item.sender_id
+                                );
                               }}
                             >
                               <span className="w-full flex items-center gap-2">
-                                {!displayImage ? (
-                                  <Avatar
-                                    size="sm"
-                                    name={displayName}
-                                    showFallback
-                                    disableAnimation
-                                  />
-                                ) : (
-                                  <Avatar
-                                    size="sm"
-                                    src={displayImage}
-                                    showFallback
-                                    disableAnimation
-                                  />
-                                )}
+                                <div className="flex">
+                                  {!displayImage ? (
+                                    <Avatar
+                                      size="sm"
+                                      name={displayName}
+                                      showFallback
+                                      disableAnimation
+                                    />
+                                  ) : (
+                                    <Avatar
+                                      size="sm"
+                                      src={displayImage}
+                                      showFallback
+                                      disableAnimation
+                                    />
+                                  )}
+                                </div>
+
                                 <div className="flex flex-col justify-center truncate">
                                   <span className="truncate text-lg">
                                     {displayName}
@@ -169,152 +183,131 @@ const ChatPage = () => {
                                   <span className="text-xs truncate">
                                     {isUserLatestMessager
                                       ? `You: ${item.message}`
-                                      : item.message}
+                                      : item.message}{" "}
                                   </span>
                                 </div>
                               </span>
-                              <Popover showArrow placement="bottom">
-                                <PopoverTrigger>
-                                  <div className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full p-2 hover:bg-green-900">
-                                    <BsThreeDotsVertical />
-                                  </div>
-                                </PopoverTrigger>
-                                <PopoverContent className="p-1">
-                                  <Button
-                                    size="sm"
-                                    startContent={<IoMdTrash />}
-                                  >
-                                    Delete
-                                  </Button>
-                                </PopoverContent>
-                              </Popover>
                             </li>
                           );
                         })
-                      ) : (
-                        <li className="flex justify-center items-center h-full">
-                          Loading...
-                        </li>
                       )}
                     </ul>
                   </div>
-                  {/* Chat Messages */}
-                  <div
-                    className={`${
-                      currentView !== "chat" ? "hidden lg:block" : "block"
-                    } h-full col-span-2 relative`}
-                  >
-                    {/* lg:hidden */}
-                    <div className="absolute top-0 left-0 w-full h-12 px-4 bg-white flex gap-3 items-center justify-between">
-                      <Button
-                        startContent={<IoChevronBack />}
-                        variant="faded"
-                        size="sm"
-                        className="visible lg:invisible"
-                        onClick={() => {
-                          setSelectedConvo(null);
-                          setCurrentView("headers");
-                        }}
-                      >
-                        back
-                      </Button>
-                      {/* title */}
-                      <h3 className="text-sm font-semibold">
-                        {partnerDisplayName}
-                      </h3>
-                      <Button
-                        startContent={<IoChevronBack />}
-                        variant="faded"
-                        size="sm"
-                        className="invisible"
-                      >
-                        back
-                      </Button>
-                    </div>
-                    <div className="p-4">
-                      <div className="flex flex-col gap-3">
-                        {chatMessages.map((message) => {
-                          const isSender =
-                            message.sender_id === (user ? user.id : "");
-                          const displayName = isSender
-                            ? `${message.receiver_first_name} ${message.receiver_last_name}`
-                            : `${message.sender_first_name} ${message.sender_last_name}`;
-                          const partnerDisplayName = isSender
-                            ? `${message.sender_first_name} ${message.sender_last_name}`
-                            : `${message.receiver_first_name} ${message.receiver_last_name}`;
+                </div>
 
-                          const partnerProfilePicture = isSender
-                            ? message.sender_profile_picture
-                            : message.receiver_profile_picture;
+                {/* messages */}
+                <div
+                  className={`${
+                    currentView === "chat" ? "block" : "hidden"
+                  } lg:block h-full w-full p-4 overflow-y-auto`}
+                >
+                  {selectedConvo ? (
+                    <>
+                      <div className="h-full w-full flex flex-col rounded-xl border border-green-500 bg-gray-100 relative">
+                        {/* messages header */}
+                        <div className="w-full h-14 flex lg:justify-center items-center p-2 gap-2 rounded-xl">
+                          <Button
+                            // isIconOnly
+                            startContent={<IoArrowBack size={18} />}
+                            variant="light"
+                            size="sm"
+                            className="lg:hidden"
+                            onClick={() => {
+                              setSelectedConvo(null);
+                              setCurrentView("headers");
+                            }}
+                          >
+                            <h3 className="text-lg font-semibold truncate">
+                              {partnerDisplayName}
+                            </h3>
+                          </Button>
+                          <h3 className="text-lg font-semibold truncate hidden lg:block">
+                            {partnerDisplayName}
+                          </h3>
+                        </div>
 
-                          return (
-                            <div
-                              key={message.chat_message_id}
-                              className={`flex gap-4 items-start ${
-                                isSender ? "justify-end" : ""
-                              }`}
-                            >
-                              {!isSender &&
-                                (!partnerProfilePicture ? (
-                                  <Avatar
-                                    name={partnerDisplayName}
-                                    showFallback
-                                    disableAnimation
-                                  />
-                                ) : (
-                                  <Avatar
-                                    src={partnerProfilePicture}
-                                    showFallback
-                                    disableAnimation
-                                  />
-                                ))}
-                              <div
-                                className={`message py-2 ${
-                                  isSender
-                                    ? "text-right px-3 rounded-2xl bg-gray-300"
-                                    : "text-left"
-                                }`}
-                                style={{ whiteSpace: "pre-wrap" }} // Preserve newlines
-                              >
-                                {message.message}
-                              </div>
-                              {isSender && (
-                                <Avatar
-                                  // name={displayName}
-                                  name="You"
-                                  showFallback
-                                  disableAnimation
-                                />
-                              )}
-                            </div>
-                          );
-                        })}
+                        {/* messages body */}
+                        <div className="w-full h-full flex flex-col gap-2 flex-grow p-2 overflow-y-auto">
+                            {chatMessages.map((message) => {
+                              const isSender =
+                                message.sender_id === user.id ? true : false;
+
+                              const partnerProfilePicture = isSender
+                                ? message.sender_profile_picture
+                                : message.receiver_profile_picture;
+
+                              return (
+                                <div
+                                  key={message.chat_message_id}
+                                  className={`flex gap-4 items-center ${
+                                    isSender ? "justify-end" : ""
+                                  }`}
+                                >
+                                  <div className="flex">
+                                    {!isSender &&
+                                      (!partnerProfilePicture ? (
+                                        <Avatar
+                                          name={partnerDisplayName}
+                                          showFallback
+                                          disableAnimation
+                                        />
+                                      ) : (
+                                        <Avatar
+                                          src={partnerProfilePicture}
+                                          showFallback
+                                          disableAnimation
+                                        />
+                                      ))}
+                                  </div>
+
+                                  <div
+                                    className={`message py-2 ${
+                                      isSender
+                                        ? "text-right px-3 rounded-2xl bg-gray-300"
+                                        : "text-left"
+                                    }`}
+                                    style={{ whiteSpace: "pre-wrap" }} // Preserve newlines
+                                  >
+                                    {message.message}
+                                  </div>
+                                  <div ref={bottomRef} />
+                                </div>
+                              );
+                            })}
+                       
+                        </div>
+
+                        {/* messages footer */}
+                        <div className="w-full flex p-2 gap-2">
+                          <Textarea
+                            placeholder="Type your message..."
+                            color="success"
+                            minRows={1}
+                            maxRows={1}
+                            value={messageInput}
+                            onChange={(e) => setMessageInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSubmit();
+                              }
+                            }}
+                          />
+                          <Button
+                            isDisabled={!messageInput}
+                            className={`${!messageInput && "hidden"}`}
+                            onClick={handleSubmit}
+                          >
+                            Send
+                          </Button>
+                        </div>
                       </div>
+                    </>
+                  ) : (
+                    <div className="h-full w-full flex justify-center items-center text-gray-600 text-sm">
+                      Select a message
                     </div>
-                    {/* input text: footer */}
-                    <div
-                      className={`${
-                        (!selectedConvo || loadingChatHeaders) && "hidden"
-                      } absolute bottom-16 w-full z-50 bg-white shadow-lg`}
-                    >
-                      <div className="max-w-6xl mx-auto flex p-2 gap-2">
-                        <Textarea
-                          placeholder="Type your message..."
-                          minRows={1}
-                          maxRows={2}
-                          value={messageInput}
-                          onChange={(e) => setMessageInput(e.target.value)}
-                        />
-                        <Button
-                          isDisabled={!messageInput}
-                          className={`${!messageInput && "hidden"}`}
-                          onClick={handleSubmit}
-                        >
-                          Send
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>

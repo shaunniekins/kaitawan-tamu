@@ -136,7 +136,8 @@ export default function DashboardLayout({
           <div
             className={`${
               (pathname === "/member/sell" ||
-                pathname.startsWith("/member/explore/")) &&
+                pathname.startsWith("/member/explore/") ||
+                pathname === "/member/chat") &&
               "hidden"
             } h-16 w-full z-50 shadow-lg`}
           >
