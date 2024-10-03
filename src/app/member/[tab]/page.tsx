@@ -5,16 +5,19 @@ import ExplorePage from "@/components/member/ExplorePage";
 import ListingPage from "@/components/member/ListingPage";
 import ProfilePage from "@/components/member/ProfilePage";
 import SellPage from "@/components/member/SellPage";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import React from "react";
 
 export default function TabContent() {
   const path = usePathname();
+  const searchParams = useSearchParams();
+  const tag = searchParams.get("tags");
 
   let activeComponent;
 
   switch (path) {
     case "/member/explore":
-      activeComponent = <ExplorePage />;
+      activeComponent = <ExplorePage tagParam={tag} />;
       break;
     case "/member/transaction":
       activeComponent = <CartPage />;
@@ -37,7 +40,7 @@ export default function TabContent() {
       //   activeComponent = <div>ProfilePage</div>;
       break;
     default:
-      activeComponent = 'hey';
+      activeComponent = "hey";
   }
 
   return <>{activeComponent}</>;

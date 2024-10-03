@@ -12,6 +12,8 @@ import { GrTransaction } from "react-icons/gr";
 import { useEffect, useState } from "react";
 import { FaComments } from "react-icons/fa";
 import ExploreHeader from "@/components/member/headers/ExploreHeader";
+import { Button } from "@nextui-org/react";
+import { RiRobot2Line } from "react-icons/ri";
 
 interface NavigationItem {
   path: string;
@@ -121,7 +123,7 @@ export default function DashboardLayout({
                 pathname === "/member/sell" ||
                 pathname.startsWith("/member/explore/") ||
                 pathname.startsWith("/member/profile/")) &&
-                // && pathname !== "/member/explore"
+              // && pathname !== "/member/explore"
               "hidden"
             }`}
           >
