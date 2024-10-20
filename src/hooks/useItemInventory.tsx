@@ -44,10 +44,9 @@ const useItemInventory = (
         query = isUserIdEqual
           ? query.eq("seller_id", userId)
           : query.neq("seller_id", userId);
-
-        if (tags && tags.length > 0) {
-          query = query.in("item_category", tags);
-        }
+      }
+      if (tags && tags.length > 0) {
+        query = query.in("item_category", tags);
       }
 
       const response: PostgrestResponse<any> = await query.range(
@@ -144,7 +143,9 @@ const useItemInventory = (
                     fetchFullActiveItems(newRecord.item_id).then(
                       (fullActiveItem) => {
                         if (fullActiveItem) {
-                          setItems((prevItems) => [...prevItems, fullActiveItem].slice(0, rowsPerPage));
+                          setItems((prevItems) =>
+                            [...prevItems, fullActiveItem].slice(0, rowsPerPage)
+                          );
                         }
                       }
                     );
@@ -201,7 +202,15 @@ const useItemInventory = (
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [filter, isFilterEqual, userId, isUserIdEqual, tags, currentPage, rowsPerPage]);
+  }, [
+    filter,
+    isFilterEqual,
+    userId,
+    isUserIdEqual,
+    tags,
+    currentPage,
+    rowsPerPage,
+  ]);
 
   useEffect(() => {
     fetchActiveItems();

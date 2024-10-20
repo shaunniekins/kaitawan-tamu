@@ -73,10 +73,16 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
   // Initialize selectedTags based on tagParam
   useEffect(() => {
     if (tagParam) {
-      const tagList = tagParam.split(",").map(
-        (tag) => tag.charAt(0).toUpperCase() + tag.slice(1) // Capitalize each tag
-      );
+      const tagList = tagParam.includes(",")
+        ? tagParam
+            .split(",")
+            .map(
+              (tag) => tag.trim().charAt(0).toUpperCase() + tag.trim().slice(1)
+            )
+        : [tagParam.trim().charAt(0).toUpperCase() + tagParam.trim().slice(1)];
       setSelectedTags(tagList);
+    } else {
+      setSelectedTags([]);
     }
   }, [tagParam]);
 
@@ -163,13 +169,32 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
 
     return parts.map((part, index) => {
       if (urlRegex.test(part)) {
+        const urlParams = new URLSearchParams(part.split("?")[1]);
+        const tags = urlParams.get("tags");
         return (
-          <Link key={index} href={part}>
-            <a className="text-blue-500 underline">here</a>.
+          <Link
+            key={`link-${index}`}
+            href={part}
+            onClick={(e) => {
+              e.preventDefault();
+              if (tags) {
+                const tagList = tags
+                  .split(",")
+                  .map(
+                    (tag) =>
+                      tag.trim().charAt(0).toUpperCase() + tag.trim().slice(1)
+                  );
+                setSelectedTags(tagList);
+                router.push(part);
+              }
+              setIsAiChatOpen(false);
+            }}
+          >
+            <div className="text-blue-500 underline">here</div>
           </Link>
         );
       }
-      return part;
+      return <React.Fragment key={`text-${index}`}>{part}</React.Fragment>;
     });
   };
 
@@ -315,6 +340,7 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
         <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 gap-3 px-2">
           {/* AI */}
           <Button
+            key="ai-button"
             isIconOnly
             startContent={<RiRobot2Line color="white" size={35} />}
             className="fixed ml-2 right-2 lg:right-96 bottom-20 lg:bottom-10 bg-[#008B47] h-14 w-14 p-2 rounded-full"
