@@ -7,7 +7,13 @@ export const getIdFromPathname = (pathname: string) => {
 };
 
 export const resizeImage = (file: File) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    // Check if the file is an image
+    if (!file.type.startsWith("image/")) {
+      resolve(file); // Return the original file if it's not an image
+      return;
+    }
+
     Resizer.imageFileResizer(
       file,
       500, // Max width
@@ -20,5 +26,23 @@ export const resizeImage = (file: File) => {
       },
       "file" // Output type (can also be base64)
     );
+  });
+};
+
+export const generateVideoThumbnail = (videoUrl: string): Promise<string> => {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.src = videoUrl;
+    video.crossOrigin = "anonymous";
+    video.currentTime = 1; // Capture the thumbnail at 1 second
+
+    video.addEventListener("loadeddata", () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext("2d");
+      context?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/png"));
+    });
   });
 };

@@ -5,15 +5,7 @@ import { useRouter } from "next/navigation";
 import React, { useRef } from "react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  Avatar,
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Spinner,
-  Textarea,
-} from "@nextui-org/react";
+import { Avatar, Button, Spinner, Textarea } from "@nextui-org/react";
 import useChatMessages from "@/hooks/useChatMessages";
 import { insertChatMessage } from "@/app/api/chatMessagesIUD";
 import useChatHeaders from "@/hooks/useChatHeaders";
@@ -228,53 +220,52 @@ const ChatPage = () => {
 
                         {/* messages body */}
                         <div className="w-full h-full flex flex-col gap-2 flex-grow p-2 overflow-y-auto">
-                            {chatMessages.map((message) => {
-                              const isSender =
-                                message.sender_id === user.id ? true : false;
+                          {chatMessages.map((message) => {
+                            const isSender =
+                              message.sender_id === user.id ? true : false;
 
-                              const partnerProfilePicture = isSender
-                                ? message.sender_profile_picture
-                                : message.receiver_profile_picture;
+                            const partnerProfilePicture = isSender
+                              ? message.sender_profile_picture
+                              : message.receiver_profile_picture;
 
-                              return (
-                                <div
-                                  key={message.chat_message_id}
-                                  className={`flex gap-4 items-center ${
-                                    isSender ? "justify-end" : ""
-                                  }`}
-                                >
-                                  <div className="flex">
-                                    {!isSender &&
-                                      (!partnerProfilePicture ? (
-                                        <Avatar
-                                          name={partnerDisplayName}
-                                          showFallback
-                                          disableAnimation
-                                        />
-                                      ) : (
-                                        <Avatar
-                                          src={partnerProfilePicture}
-                                          showFallback
-                                          disableAnimation
-                                        />
-                                      ))}
-                                  </div>
-
-                                  <div
-                                    className={`message py-2 ${
-                                      isSender
-                                        ? "text-right px-3 rounded-2xl bg-gray-300"
-                                        : "text-left"
-                                    }`}
-                                    style={{ whiteSpace: "pre-wrap" }} // Preserve newlines
-                                  >
-                                    {message.message}
-                                  </div>
-                                  <div ref={bottomRef} />
+                            return (
+                              <div
+                                key={message.chat_message_id}
+                                className={`flex gap-4 items-center ${
+                                  isSender ? "justify-end" : ""
+                                }`}
+                              >
+                                <div className="flex">
+                                  {!isSender &&
+                                    (!partnerProfilePicture ? (
+                                      <Avatar
+                                        name={partnerDisplayName}
+                                        showFallback
+                                        disableAnimation
+                                      />
+                                    ) : (
+                                      <Avatar
+                                        src={partnerProfilePicture}
+                                        showFallback
+                                        disableAnimation
+                                      />
+                                    ))}
                                 </div>
-                              );
-                            })}
-                       
+
+                                <div
+                                  className={`message py-2 ${
+                                    isSender
+                                      ? "text-right px-3 rounded-2xl bg-gray-300"
+                                      : "text-left"
+                                  }`}
+                                  style={{ whiteSpace: "pre-wrap" }} // Preserve newlines
+                                >
+                                  {message.message}
+                                </div>
+                                <div ref={bottomRef} />
+                              </div>
+                            );
+                          })}
                         </div>
 
                         {/* messages footer */}

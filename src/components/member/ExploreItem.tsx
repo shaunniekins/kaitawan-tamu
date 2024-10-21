@@ -45,6 +45,8 @@ import { insertInProgressPurchaseData } from "@/app/api/inProgressPurchasesIUD";
 import useSingleInProgressPurchase from "@/hooks/useSingleInProgressPurchase";
 import useLikedItems from "@/hooks/useLikedItems";
 import { deleteLikedItem, insertLikedItem } from "@/app/api/likedItemsIUD";
+import Video360Viewer from "../Video360Viewer";
+import { generateVideoThumbnail } from "@/utils/compUtils";
 
 interface ExploreItemProps {
   item_id: number;
@@ -257,6 +259,27 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
 
   const currentDate = new Date();
 
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!item?.image_urls) return;
+
+    const generateThumbnails = async () => {
+      const newThumbnails = await Promise.all(
+        item.image_urls.map(async (imgObj: any) => {
+          if (imgObj.url.endsWith(".mp4")) {
+            return await generateVideoThumbnail(imgObj.url);
+          } else {
+            return imgObj.url;
+          }
+        })
+      );
+      setThumbnails(newThumbnails);
+    };
+
+    generateThumbnails();
+  }, [item?.image_urls]);
+
   return (
     <>
       <Modal
@@ -325,41 +348,72 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                   {/* product image */}
                   <div className="w-full bg-gray-200 flex justify-center">
                     <Zoom>
-                      <Image
-                        alt="Product Image"
-                        className="object-cover rounded-none rounded-b-md h-80 w-80 lg:h-96 lg:w-96"
-                        src={
-                          isLoading
-                            ? "https://fakeimg.pl/500x500?text=img&font=bebas"
-                            : item?.image_urls?.length > 0
-                            ? item.image_urls[currentImage]
-                            : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                        }
-                      />
+                      {isLoading ? (
+                        <Image
+                          alt="Product Image"
+                          className="object-cover rounded-none rounded-b-md h-80 w-80 lg:h-96 lg:w-96"
+                          src="https://fakeimg.pl/500x500?text=img&font=bebas"
+                        />
+                      ) : item?.image_urls?.length > 0 ? (
+                        item.image_urls[currentImage].url.endsWith(".mp4") ? (
+                          <div className="object-cover rounded-none rounded-b-md h-80 w-80 lg:h-96 lg:w-96">
+                            <Video360Viewer
+                              videoSrc={item.image_urls[currentImage].url}
+                            />
+                          </div>
+                        ) : (
+                          <Image
+                            alt="Product Image"
+                            className="object-cover rounded-none rounded-b-md h-80 w-80 lg:h-96 lg:w-96"
+                            src={item.image_urls[currentImage].url}
+                          />
+                        )
+                      ) : (
+                        <Image
+                          alt="Product Image"
+                          className="object-cover rounded-none rounded-b-md h-80 w-80 lg:h-96 lg:w-96"
+                          src="https://fakeimg.pl/500x500?text=img&font=bebas"
+                        />
+                      )}
                     </Zoom>
                   </div>
                   {/* Thumbnail images below the zoom image */}
                   <div className="flex justify-center items-center gap-4 mt-2">
                     {item?.image_urls &&
-                      item?.image_urls.map((imgUrl: any, index: any) => (
-                        <div
-                          key={index}
-                          onClick={() => setCurrentImage(index)}
-                          className={`cursor-pointer ${
-                            currentImage === index
-                              ? "border-2 border-blue-500"
-                              : ""
-                          }`}
-                        >
-                          <Image
-                            alt={`Thumbnail ${index + 1}`}
-                            src={imgUrl}
-                            width={100}
-                            height={100}
-                            className="object-cover rounded-md aspect-square"
-                          />
-                        </div>
-                      ))}
+                      item?.image_urls.map(
+                        (
+                          imgObj: { url: string; item_order: number },
+                          index: number
+                        ) => (
+                          <div
+                            key={index}
+                            onClick={() => setCurrentImage(index)}
+                            className={`cursor-pointer ${
+                              currentImage === index
+                                ? "border-2 border-green-500 rounded-md"
+                                : ""
+                            }`}
+                          >
+                            {imgObj.url.endsWith(".mp4") ? (
+                              <Image
+                                alt={`Thumbnail ${index + 1}`}
+                                src={thumbnails[index]}
+                                width={100}
+                                height={100}
+                                className="object-cover rounded-md aspect-square"
+                              />
+                            ) : (
+                              <Image
+                                alt={`Thumbnail ${index + 1}`}
+                                src={imgObj.url}
+                                width={100}
+                                height={100}
+                                className="object-cover rounded-md aspect-square"
+                              />
+                            )}
+                          </div>
+                        )
+                      )}
                   </div>
                 </div>
                 {/* card with product details */}

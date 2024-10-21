@@ -18,6 +18,23 @@ export const checkerInProgressPurchaseItemByUser = async (itemId: number) => {
   }
 };
 
+export const checkerPurchaseItemStatusByUser = async (itemId: number) => {
+  try {
+    const response = await supabase
+      .from("ViewFullInProgressPurchasesTransactions")
+      .select("progress_status, in_progress_id")
+      .eq("item_id", itemId);
+
+    if (response.error) {
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.error("Error fetching purchase item status data:", error);
+    return null;
+  }
+};
+
 export const checkerBiddingItemByUser = async (
   itemId: number,
   userId: string

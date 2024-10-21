@@ -1,28 +1,34 @@
-// ImageSelector.tsx
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 
-interface ImageUploaderProps {
+interface MediaUploaderProps {
   isDisabled?: boolean;
   title: string;
-  selectedImages: File[];
-  previewImages: string[];
-  onChange: (images: File[], previews: string[]) => void;
+  selectedMedia: File[];
+  previewMedia: string[];
+  onChange: (media: File[], previews: string[]) => void;
 }
 
-const DraggableImage = ({ id, src, index, moveImage, removeImage }: any) => {
+const DraggableMedia = ({
+  id,
+  src,
+  index,
+  moveMedia,
+  removeMedia,
+  type,
+}: any) => {
   const [, ref] = useDrag({
-    type: "IMAGE",
+    type: "MEDIA",
     item: { id, index },
   });
 
   const [, drop] = useDrop({
-    accept: "IMAGE",
+    accept: "MEDIA",
     hover: (draggedItem: { index: number }) => {
       if (draggedItem.index !== index) {
-        moveImage(draggedItem.index, index);
+        moveMedia(draggedItem.index, index);
         draggedItem.index = index;
       }
     },
@@ -35,13 +41,23 @@ const DraggableImage = ({ id, src, index, moveImage, removeImage }: any) => {
 
   return (
     <div ref={combinedRef} className="relative">
-      <img
-        src={src}
-        alt="Preview"
-        className="w-20 h-20 object-cover rounded-lg"
-      />
+      {type === "video" ? (
+        <video
+          src={src}
+          className="w-20 h-20 object-cover rounded-lg"
+          muted
+          autoPlay
+          loop
+        />
+      ) : (
+        <img
+          src={src}
+          alt="Preview"
+          className="w-20 h-20 object-cover rounded-lg"
+        />
+      )}
       <button
-        onClick={() => removeImage(index)}
+        onClick={() => removeMedia(index)}
         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
       >
         x
@@ -50,38 +66,59 @@ const DraggableImage = ({ id, src, index, moveImage, removeImage }: any) => {
   );
 };
 
-const ImageSelector: React.FC<ImageUploaderProps> = ({
+const ImageSelector: React.FC<MediaUploaderProps> = ({
   isDisabled = false,
   title,
-  selectedImages,
-  previewImages,
+  selectedMedia,
+  previewMedia,
   onChange,
 }) => {
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleMediaChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const newImages = [...selectedImages, e.target.files[0]];
-      const newPreviews = [
-        ...previewImages,
-        URL.createObjectURL(e.target.files[0]),
-      ];
-      onChange(newImages.slice(0, 5), newPreviews.slice(0, 5));
+      const file = e.target.files[0];
+      const isVideo = file.type.startsWith("video/");
+
+      // Check if a video is already selected
+      const videoExists = selectedMedia.some((media) =>
+        media.type.startsWith("video/")
+      );
+
+      // Check the number of images already selected
+      const imageCount = selectedMedia.filter((media) =>
+        media.type.startsWith("image/")
+      ).length;
+
+      if (isVideo && videoExists) {
+        alert("You can only upload one video file.");
+        return;
+      }
+
+      if (!isVideo && imageCount >= 5) {
+        alert("You can only upload up to 5 images.");
+        return;
+      }
+
+      const newMedia = [...selectedMedia, file];
+      const newPreviews = [...previewMedia, URL.createObjectURL(file)];
+
+      onChange(newMedia, newPreviews);
     }
   };
 
-  const removeImage = (index: number) => {
-    const newImages = selectedImages.filter((_, i) => i !== index);
-    const newPreviews = previewImages.filter((_, i) => i !== index);
-    onChange(newImages, newPreviews);
+  const removeMedia = (index: number) => {
+    const newMedia = selectedMedia.filter((_, i) => i !== index);
+    const newPreviews = previewMedia.filter((_, i) => i !== index);
+    onChange(newMedia, newPreviews);
   };
 
-  const moveImage = (fromIndex: number, toIndex: number) => {
-    const newImages = [...selectedImages];
-    const newPreviews = [...previewImages];
-    const [movedImage] = newImages.splice(fromIndex, 1);
+  const moveMedia = (fromIndex: number, toIndex: number) => {
+    const newMedia = [...selectedMedia];
+    const newPreviews = [...previewMedia];
+    const [movedMedia] = newMedia.splice(fromIndex, 1);
     const [movedPreview] = newPreviews.splice(fromIndex, 1);
-    newImages.splice(toIndex, 0, movedImage);
+    newMedia.splice(toIndex, 0, movedMedia);
     newPreviews.splice(toIndex, 0, movedPreview);
-    onChange(newImages, newPreviews);
+    onChange(newMedia, newPreviews);
   };
 
   const [isMobile, setIsMobile] = useState(false);
@@ -106,17 +143,22 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
         <label className="text-blue-700 hidden">{title}</label>
         <div className="overflow-x-auto">
           <div className="flex gap-2 w-max">
-            {previewImages.map((preview, index) => (
-              <DraggableImage
+            {previewMedia?.map((preview, index) => (
+              <DraggableMedia
                 key={index}
                 id={index}
                 src={preview}
                 index={index}
-                moveImage={moveImage}
-                removeImage={removeImage}
+                moveMedia={moveMedia}
+                removeMedia={removeMedia}
+                type={
+                  selectedMedia[index].type.startsWith("video/")
+                    ? "video"
+                    : "image"
+                }
               />
             ))}
-            {previewImages.length < 5 && (
+            {previewMedia?.length < 6 && (
               <div className="flex items-center justify-center gap-3">
                 <label
                   className={`flex-shrink-0 w-20 h-20 flex flex-col items-center px-4 py-6 bg-gray-200 text-blue rounded-lg tracking-wide uppercase border border-blue hover:bg-blue hover:text-white ${
@@ -134,8 +176,8 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
                     disabled={isDisabled}
                     type="file"
                     className="hidden"
-                    accept="image/jpeg, image/png"
-                    onChange={handleImageChange}
+                    accept="image/jpeg, image/png, video/mp4"
+                    onChange={handleMediaChange}
                   />
                 </label>
                 <label
@@ -154,9 +196,9 @@ const ImageSelector: React.FC<ImageUploaderProps> = ({
                     disabled={isDisabled}
                     type="file"
                     className="hidden"
-                    accept="image/jpeg, image/png"
+                    accept="image/jpeg, image/png, video/mp4"
                     capture="environment"
-                    onChange={handleImageChange}
+                    onChange={handleMediaChange}
                   />
                 </label>
               </div>

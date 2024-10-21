@@ -217,8 +217,8 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="sticky top-0 w-full flex gap-3 justify-between items-center bg-white">
-                <div className="flex justify-start items-center gap-3 ">
+              <ModalHeader className="z-50 sticky top-0 w-full flex gap-3 justify-between items-center bg-white">
+                <div className="flex justify-start items-center gap-3 bg-white">
                   <Button
                     isIconOnly
                     variant="flat"
@@ -244,7 +244,7 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
                 </Button>
               </ModalHeader>
               <ModalBody>
-                <div className="h-full flex flex-col gap-3">
+                <div className="h-full flex flex-col gap-3 bg-white">
                   {chatMessages && chatMessages.length === 0 ? (
                     <div className="h-full text-gray-700 flex flex-col items-center justify-center">
                       <RiRobot2Line size={30} />
@@ -371,7 +371,11 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
                         isLoading
                           ? "https://fakeimg.pl/500x500?text=img&font=bebas"
                           : item.image_urls && item.image_urls.length > 0
-                          ? item.image_urls[0]
+                          ? item.image_urls[0].url.endsWith(".mp4")
+                            ? item.image_urls.length > 1
+                              ? item.image_urls[1].url
+                              : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                            : item.image_urls[0].url
                           : "https://fakeimg.pl/500x500?text=img&font=bebas"
                       }
                     />

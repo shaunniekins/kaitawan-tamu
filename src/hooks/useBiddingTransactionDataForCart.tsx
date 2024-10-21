@@ -33,52 +33,45 @@ const useBiddingTransactionData = (userId: string) => {
       const auctionOffers = response.data ?? [];
       setAuctionOffers(auctionOffers);
 
-      // Extract unique item_list_id and count duplicates
+      // Process auction offers
       const itemCountMap = new Map<number, number>();
       let highestBidOfferLocal: any | null = null;
-      const currentDate = new Date();
 
       auctionOffers.forEach((offer: any) => {
         const itemId = offer.item_id;
-        const bidPrice = offer.bid_price;
-        const bidDueDate = new Date(offer.bid_due);
 
-        // Update highest bid offer if the bid is not past due
+        // Use the highest_bid_price field directly
+        const highestBidPrice = offer.highest_bid_price;
+
         if (
-          bidDueDate >= currentDate &&
-          (!highestBidOfferLocal || bidPrice > highestBidOfferLocal.bid_price)
+          !highestBidOfferLocal ||
+          highestBidPrice > highestBidOfferLocal.highest_bid_price
         ) {
           highestBidOfferLocal = offer;
         }
 
-        if (itemCountMap.has(itemId)) {
-          itemCountMap.set(itemId, itemCountMap.get(itemId)! + 1);
-        } else {
-          itemCountMap.set(itemId, 1);
-        }
+        itemCountMap.set(itemId, (itemCountMap.get(itemId) || 0) + 1);
       });
 
       const uniqueItemListIds = Array.from(itemCountMap.keys());
 
-      // Set state with unique item_list_id and item counts
       setItemListIds(uniqueItemListIds);
       setItemCounts(itemCountMap);
       setHighestBidOffer(highestBidOfferLocal);
 
       // Fetch items based on unique item_list_id
       const itemsResponse = await fetchItemsBasedOnId(uniqueItemListIds);
-      if (itemsResponse) {
-        // Optionally, check if items are already in progress purchases
-        const firstItem = itemsResponse.data[0]; // Assuming at least one item exists
-        const response = await checkerInProgressPurchaseItemByUser(
+      if (itemsResponse && itemsResponse.data.length > 0) {
+        const firstItem = itemsResponse.data[0];
+        const inProgressResponse = await checkerInProgressPurchaseItemByUser(
           firstItem.item_id
         );
 
-        if (response && response.data.length > 0) {
+        if (inProgressResponse && inProgressResponse.data.length > 0) {
           // Handle if item is already in progress purchase
-          return;
+          console.log("Item is already in progress purchase");
         } else {
-          setItems(itemsResponse.data); // Set items in state
+          setItems(itemsResponse.data);
         }
       }
 
@@ -90,78 +83,48 @@ const useBiddingTransactionData = (userId: string) => {
   }, [userId]);
 
   const subscribeToBiddingTransactions = useCallback(() => {
-    // Subscription to BiddingTransactions table
     const biddingChannel = supabase
       .channel("chat_sessions_bidding_transactions")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "BiddingTransactions" },
         (payload) => {
-          setAuctionOffers((prev) => {
-            let updatedOffers = prev;
-
-            if (payload.eventType === "INSERT") {
-              updatedOffers = [...prev, payload.new];
-            } else if (payload.eventType === "UPDATE") {
-              updatedOffers = prev.map((offer) =>
-                offer.bid_id === payload.new.bid_id ? payload.new : offer
-              );
-            } else if (payload.eventType === "DELETE") {
-              updatedOffers = prev.filter(
-                (offer) => offer.bid_id !== payload.old.bid_id
-              );
-            }
-
-            // Sort updated offers by bid price and bid creation date
-            return updatedOffers.sort((a, b) => {
-              if (b.bid_price === a.bid_price) {
-                return (
-                  new Date(b.bid_created_at).getTime() -
-                  new Date(a.bid_created_at).getTime()
-                );
-              }
-              return b.bid_price - a.bid_price;
-            });
-          });
+          console.log("Received bidding transaction update:", payload);
+          fetchBiddingTransactionDataPerUser();
         }
       )
-      .subscribe((status) => {
-        if (status !== "SUBSCRIBED") {
-          setError("Error subscribing to bidding transactions");
-        }
-      });
+      .subscribe();
 
-    // Subscription to ItemInventory table for item updates
     const itemChannel = supabase
       .channel("item_inventory_updates")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "ItemInventory" },
         (payload) => {
-          // Re-fetch items from ViewFullItemInventory when there's a change
-          fetchItemsBasedOnId(itemListIds);
+          console.log("Received item inventory update:", payload);
+          fetchBiddingTransactionDataPerUser();
         }
       )
-      .subscribe((status) => {
-        if (status !== "SUBSCRIBED") {
-          setError("Error subscribing to item inventory");
-        }
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(biddingChannel);
       supabase.removeChannel(itemChannel);
     };
-  }, [itemListIds]);
+  }, [fetchBiddingTransactionDataPerUser]);
 
   useEffect(() => {
     fetchBiddingTransactionDataPerUser();
-
     const unsubscribe = subscribeToBiddingTransactions();
+
     return () => {
       unsubscribe();
     };
-  }, [userId]); // Only depend on userId to avoid infinite loop
+  }, [
+    userId,
+    fetchBiddingTransactionDataPerUser,
+    subscribeToBiddingTransactions,
+  ]);
 
   return {
     auctionOffers,

@@ -27,6 +27,11 @@ const CartPage = () => {
     error,
   } = useBiddingTransactionData(user?.id);
 
+  useEffect(() => {
+    console.log("highestBidOffer:", highestBidOffer);
+    console.log("items:", items);
+  }, [items]);
+
   // useEffect(() => {
   //   console.log("items:", items);
   //   console.log("items len:", items.length);
@@ -79,12 +84,16 @@ const CartPage = () => {
                             alt="Product Image"
                             className={`${
                               isLoading && "h-32 w-32"
-                            } object-cover rounded h-32 w-32 rounded-b-md`}
+                            } object-cover rounded-none h-32 w-32 rounded-b-md`}
                             src={
                               isLoading
                                 ? "https://fakeimg.pl/500x500?text=img&font=bebas"
                                 : item.image_urls && item.image_urls.length > 0
-                                ? item.image_urls[0]
+                                ? item.image_urls[0].url.endsWith(".mp4")
+                                  ? item.image_urls.length > 1
+                                    ? item.image_urls[1].url
+                                    : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                  : item.image_urls[0].url
                                 : "https://fakeimg.pl/500x500?text=img&font=bebas"
                             }
                           />

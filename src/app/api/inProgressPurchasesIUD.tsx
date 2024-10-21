@@ -37,3 +37,21 @@ export const updateInProgressPurchaseData = async (
     return null;
   }
 };
+
+export const deleteInProgressPurchaseData = async (inProgressId: number) => {
+  try {
+    const response = await supabase
+      .from("InProgressPurchases")
+      .delete()
+      .eq("in_progress_id", inProgressId)
+      .select();
+
+    if (response.error) {
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.error("Error deleting in progress purchases data:", error);
+    return null;
+  }
+};

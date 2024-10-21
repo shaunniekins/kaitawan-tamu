@@ -65,3 +65,21 @@ export const updateItemInventoryData = async (data: any, itemId: number) => {
     return null;
   }
 };
+
+export const deleteItemInventoryData = async (itemId: number) => {
+  try {
+    const response = await supabase
+      .from("ItemInventory")
+      .delete()
+      .eq("item_id", itemId)
+      .select();
+
+    if (response.error) {
+      throw response.error;
+    }
+    return response;
+  } catch (error) {
+    console.error("Error deleting item inventory data:", error);
+    return null;
+  }
+};

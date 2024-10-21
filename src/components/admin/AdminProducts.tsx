@@ -84,12 +84,20 @@ const AdminProductsComponent = () => {
               <ModalBody>
                 <div className="flex gap-2">
                   <Image
-                    alt="Card background"
-                    className="object-cover rounded-none rounded-b-md h-32 w-32"
+                    alt="Product Image"
+                    className={`${
+                      loadingItems && "h-56 w-56"
+                    } object-cover rounded-none w-full rounded-b-md aspect-square`}
                     src={
-                      selectedItem.image_urls &&
-                      selectedItem?.image_urls.length > 0
-                        ? selectedItem.image_urls[0]
+                      loadingItems
+                        ? "https://fakeimg.pl/500x500?text=img&font=bebas"
+                        : selectedItem.image_urls &&
+                          selectedItem.image_urls.length > 0
+                        ? selectedItem.image_urls[0].url.endsWith(".mp4")
+                          ? selectedItem.image_urls.length > 1
+                            ? selectedItem.image_urls[1].url
+                            : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                          : selectedItem.image_urls[0].url
                         : "https://fakeimg.pl/500x500?text=img&font=bebas"
                     }
                   />

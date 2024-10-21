@@ -65,11 +65,20 @@ const LikesPage = () => {
                         <Card className="rounded-none bg-none shadow-none">
                           <CardBody className="p-0 w-full">
                             <Image
-                              alt="Item Image"
-                              className="object-cover rounded-none w-full rounded-b-md aspect-square"
+                              alt="Product Image"
+                              className={`${
+                                isLoading && "h-56 w-56"
+                              } object-cover rounded-none w-full rounded-b-md aspect-square`}
                               src={
-                                item.image_urls && item.image_urls.length > 0
-                                  ? item.image_urls[0]
+                                isLoading
+                                  ? "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                  : item.image_urls &&
+                                    item.image_urls.length > 0
+                                  ? item.image_urls[0].url.endsWith(".mp4")
+                                    ? item.image_urls.length > 1
+                                      ? item.image_urls[1].url
+                                      : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                    : item.image_urls[0].url
                                   : "https://fakeimg.pl/500x500?text=img&font=bebas"
                               }
                             />

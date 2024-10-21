@@ -80,10 +80,38 @@ const SellPage = () => {
     }
 
     const BUCKET_NAME = "inventory-items"; // Use the correct bucket name
-    const imageUrls: string[] = [];
+    const imageUrls: { url: string; item_order: number }[] = [];
+
+    // Separate video and images
+    const video = selectedImages.find((image) =>
+      image.type.startsWith("video/")
+    );
+    const images = selectedImages.filter(
+      (image) => !image.type.startsWith("video/")
+    );
+
+    // Upload video first if it exists
+    if (video) {
+      const { data, error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(`public/${Date.now()}_${video.name}`, video);
+
+      if (error) {
+        setIsLoading(false);
+        console.error("Error uploading video:", error.message);
+        return;
+      }
+
+      const { publicUrl } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(data.path).data; // Get the public URL
+
+      imageUrls.push({ url: publicUrl, item_order: 0 }); // Add video URL with order 0
+    }
 
     // Upload each image and get the public URL
-    for (const image of selectedImages) {
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
       const { data, error } = await supabase.storage
         .from(BUCKET_NAME)
         .upload(`public/${Date.now()}_${image.name}`, image);
@@ -98,7 +126,7 @@ const SellPage = () => {
         .from(BUCKET_NAME)
         .getPublicUrl(data.path).data; // Get the public URL
 
-      imageUrls.push(publicUrl); // Add URL to array
+      imageUrls.push({ url: publicUrl, item_order: video ? i + 1 : i }); // Add URL with order
     }
 
     // Prepare the new item record
@@ -110,7 +138,7 @@ const SellPage = () => {
       item_description: newItemDescription,
       item_selling_type: newSelectedSellingType,
       seller_id: user?.id,
-      image_urls: imageUrls, // Store the array of image URLs
+      image_urls: imageUrls, // Store the array of image URLs with order
     };
 
     // Insert the item into the database
@@ -152,13 +180,14 @@ const SellPage = () => {
                   <ImageSelector
                     isDisabled={false}
                     title="Items"
-                    selectedImages={selectedImages}
-                    previewImages={previewImages}
+                    selectedMedia={selectedImages}
+                    previewMedia={previewImages}
                     onChange={handleImagesChange}
                   />
                   <p className="text-xs text-gray-600">
                     Ensure the images are in portrait or square mode. You can
-                    upload 1-5 images and drag and drop to reorder them.
+                    upload 1 video (as the 3d picture) and 1-5 images and drag
+                    and drop to reorder them.
                   </p>
                 </div>
                 <RadioGroup

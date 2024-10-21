@@ -8,6 +8,9 @@ import {
   CardFooter,
   Chip,
   Image,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Spinner,
   Tab,
   Tabs,
@@ -15,8 +18,12 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { MdOutlineSell } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineSell } from "react-icons/md";
 import { RiAuctionLine } from "react-icons/ri";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { deleteItemInventoryData } from "@/app/api/itemInventoryIUD";
+import { checkerPurchaseItemStatusByUser } from "@/app/api/checkers";
+import { deleteInProgressPurchaseData } from "@/app/api/inProgressPurchasesIUD";
 
 const ListingPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -47,6 +54,37 @@ const ListingPage = () => {
     { id: "sold", label: "Sold" },
   ];
 
+  const [currentItemId, setCurrentItemId] = useState<number | null>(null);
+
+  const handleItemDelete = async () => {
+    if (currentItemId) {
+      const statusResponse = await checkerPurchaseItemStatusByUser(
+        currentItemId
+      );
+
+      if (
+        statusResponse &&
+        statusResponse.data &&
+        statusResponse.data.length > 0
+      ) {
+        let inProgressId = statusResponse.data[0]?.in_progress_id;
+        const statusData = statusResponse.data;
+        const progressStatus = statusData[0]?.progress_status;
+
+        if (progressStatus === "pending") {
+          alert("The item is in a pending transaction.");
+        } else {
+          const response = await deleteItemInventoryData(currentItemId);
+          if (response) {
+            await deleteInProgressPurchaseData(inProgressId);
+            setCurrentItemId(null);
+          }
+        }
+      } else {
+        console.log("No status data found or statusResponse is null");
+      }
+    }
+  };
   return (
     <div className="w-full h-full flex flex-col items-center">
       {isLoading && (
@@ -82,15 +120,60 @@ const ListingPage = () => {
                           className="rounded-none bg-none shadow-none"
                         >
                           <CardBody className="p-0 w-full">
-                            <Image
-                              alt="Card background"
-                              className="object-cover rounded-none w-full rounded-b-md aspect-square"
-                              src={
-                                item.image_urls && item.image_urls.length > 0
-                                  ? item.image_urls[0]
-                                  : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                              }
-                            />
+                            <Popover
+                              showArrow
+                              placement="right"
+                              isOpen={currentItemId === item.item_id}
+                              onOpenChange={(open) => {
+                                if (open) {
+                                  setCurrentItemId(item.item_id);
+                                } else {
+                                  setCurrentItemId(null);
+                                }
+                              }}
+                            >
+                              <div className="relative group">
+                                <Image
+                                  alt="Product Image"
+                                  className={`${
+                                    isLoading && "h-56 w-56"
+                                  } object-cover rounded-none w-full rounded-b-md aspect-square`}
+                                  src={
+                                    isLoading
+                                      ? "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                      : item.image_urls &&
+                                        item.image_urls.length > 0
+                                      ? item.image_urls[0].url.endsWith(".mp4")
+                                        ? item.image_urls.length > 1
+                                          ? item.image_urls[1].url
+                                          : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                        : item.image_urls[0].url
+                                      : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                                  }
+                                />
+                                <PopoverTrigger>
+                                  <div
+                                    className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full p-2 hover:bg-green-500"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCurrentItemId(item.item_id);
+                                    }}
+                                  >
+                                    <BsThreeDotsVertical />
+                                  </div>
+                                </PopoverTrigger>
+                              </div>
+
+                              <PopoverContent className="p-3 flex flex-col items-start gap-3">
+                                <button
+                                  className="flex items-center gap-2 text-md cursor-pointer"
+                                  onClick={handleItemDelete}
+                                >
+                                  <MdDeleteOutline className="text-lg" />
+                                  <span>Delete</span>
+                                </button>
+                              </PopoverContent>
+                            </Popover>
                           </CardBody>
                           <CardFooter className="py-1 px-0 flex-col items-start rounded-none">
                             <div className="w-full flex justify-between">

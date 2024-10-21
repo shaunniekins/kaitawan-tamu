@@ -26,7 +26,7 @@ const useAIChatMessages = (
       const query = supabase
         .from("ViewFullAIMessages")
         .select("*")
-        // .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
         .order("created_at", { ascending: true });
 
       const response: PostgrestResponse<any> = await query.range(
