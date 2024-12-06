@@ -98,10 +98,24 @@ const ImageSelector: React.FC<MediaUploaderProps> = ({
         return;
       }
 
-      const newMedia = [...selectedMedia, file];
-      const newPreviews = [...previewMedia, URL.createObjectURL(file)];
-
-      onChange(newMedia, newPreviews);
+      if (isVideo) {
+        const videoElement = document.createElement("video");
+        videoElement.src = URL.createObjectURL(file);
+        videoElement.onloadedmetadata = () => {
+          if (videoElement.duration < 12 || videoElement.duration > 15) {
+            alert("The video duration should be between 12 and 15 seconds.");
+            return;
+          } else {
+            const newMedia = [...selectedMedia, file];
+            const newPreviews = [...previewMedia, videoElement.src];
+            onChange(newMedia, newPreviews);
+          }
+        };
+      } else {
+        const newMedia = [...selectedMedia, file];
+        const newPreviews = [...previewMedia, URL.createObjectURL(file)];
+        onChange(newMedia, newPreviews);
+      }
     }
   };
 
