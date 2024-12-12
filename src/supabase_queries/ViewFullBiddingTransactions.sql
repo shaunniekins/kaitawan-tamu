@@ -1,5 +1,14 @@
 create view
   "ViewFullBiddingTransactions" as
+with RankedBids as (
+  select
+    b.*,
+    row_number() over (
+      partition by b.item_id
+      order by b.bid_price desc, b.created_at asc
+    ) as bid_rank
+  from "BiddingTransactions" b
+)
 select
   b.bid_id,
   b.item_id,
@@ -7,6 +16,7 @@ select
   b.bid_due,
   b.bid_status,
   b.created_at as bid_created_at,
+  b.bid_rank,
 
   b.bidder_id,
   coalesce(
@@ -54,7 +64,7 @@ select
   i.image_urls,
   i.created_at as item_created_at
 from
-  "BiddingTransactions" b
+  RankedBids b
   join auth.users u on b.bidder_id = u.id
   join "ItemInventory" i on b.item_id = i.item_id
   join auth.users s on i.seller_id = s.id;

@@ -10,9 +10,6 @@ import {
   Avatar,
   Badge,
   Button,
-  Card,
-  CardBody,
-  CardFooter,
   Chip,
   DateInput,
   Image,
@@ -28,15 +25,9 @@ import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
 import useBiddingTransactions from "@/hooks/useBiddingTransactions";
-import {
-  checkerBiddingItemByUser,
-  // checkerInProgressPurchaseItemByUser,
-} from "@/app/api/checkers";
+import { checkerBiddingItemByUser } from "@/app/api/checkers";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { IoChevronDown, IoChevronUp } from "react-icons/io5";
-import useItemInventory from "@/hooks/useItemInventory";
-import { MdOutlineSell } from "react-icons/md";
-import { RiAuctionLine } from "react-icons/ri";
 import {
   insertBiddingTransactionData,
   updateBiddingTransactionData,
@@ -70,16 +61,11 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
   //   []
   // );
 
-  const { item, loadingItem, errorItem } = useSingleItemInventory(item_id);
-  const { bids, loadingBids, errorBids } = useBiddingTransactions(
-    item_id,
-    item?.item_selling_type
-  );
-  const { itemInProgress, loadingItemInProgress, errorItemInProgress } =
-    useSingleInProgressPurchase(item_id);
+  const { item, loadingItem } = useSingleItemInventory(item_id);
+  const { bids } = useBiddingTransactions(item_id, item?.item_selling_type);
+  const { itemInProgress } = useSingleInProgressPurchase(item_id);
 
-  const { likedItems, loadingLikedItems, totalLikedItems, errorLikedItems } =
-    useLikedItems(user?.id, item_id);
+  const { likedItems } = useLikedItems(user?.id, item_id);
 
   // const [itemInProgress, setItemInProgress] = useState<any>(null);
 
@@ -139,13 +125,23 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
   const userHasBid = bids.some((offer) => offer.bidder_id === user?.id);
 
   const formatDate = (dateString: string): string => {
-    const options: Intl.DateTimeFormatOptions = {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
-    };
+    });
+  };
+
+  const formatDateWithTime = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", options);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   const handleBiddingTransactionData = async () => {
@@ -526,7 +522,7 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                             variant="flat"
                             size="sm"
                             className={`${
-                              index !== 0 && "hidden"
+                              offer.bid_rank !== 1 && "hidden"
                             } mr-7 md:mr-0 mb-1`}
                           >
                             <div
@@ -535,11 +531,17 @@ const ExploreItem = ({ item_id }: ExploreItemProps) => {
                             >
                               <div className="flex justify-between">
                                 <h6 className="text-sm">
-                                  Offer: PHP {offer.bid_price}
+                                  Offer: PHP {offer.bid_price.toLocaleString()}
                                 </h6>
-                                <h6 className="text-xs italic">
-                                  {formatDate(offer.bid_due)}
-                                </h6>
+                                <div className="flex flex-col items-end">
+                                  <h6 className="text-xs italic">
+                                    Due: {formatDate(offer.bid_due)}
+                                  </h6>
+                                  <h6 className="text-xs italic">
+                                    Bid:{" "}
+                                    {formatDateWithTime(offer.bid_created_at)}
+                                  </h6>
+                                </div>
                               </div>
                               <div className="flex justify-between">
                                 <h6 className="text-sm font-semibold">
