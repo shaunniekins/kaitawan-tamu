@@ -97,8 +97,8 @@ Kaitawan Tamu Team`,
 
   return (
     <>
-      <div className="w-full h-full flex justify-start flex-col overflow-y-auto">
-        <div className="w-full flex justify-between">
+      <div className="w-full h-full flex justify-start flex-col overflow-y-auto p-4 bg-gray-100">
+        <div className="w-full flex justify-between items-center mb-4">
           <Pagination
             isCompact
             showControls
@@ -134,13 +134,16 @@ Kaitawan Tamu Team`,
           </Select>
         </div>
         {usersData.length === 0 ? (
-          <div className="w-full h-[75%] flex items-center justify-center">
+          <div className="w-full h-[75%] flex items-center justify-center bg-white rounded-lg shadow-md">
             <p className="text-gray-500">No users available</p>
           </div>
         ) : (
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
             {usersData.map((user, index) => (
-              <Card key={index} className="w-full">
+              <Card
+                key={index}
+                className="w-full bg-white rounded-lg shadow-md"
+              >
                 <CardBody className="w-full">
                   <div className="p-0 w-full flex justify-between">
                     <div className="w-full flex gap-2 overflow-hidden">

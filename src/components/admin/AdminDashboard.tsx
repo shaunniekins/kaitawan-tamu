@@ -183,7 +183,7 @@ const AdminDashboardComponent = () => {
           )}
         </ModalContent>
       </Modal>
-      <div className="w-full h-full flex justify-start flex-col overflow-y-auto">
+      <div className="w-full h-full flex justify-start flex-col overflow-y-auto p-4 bg-gray-100">
         <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-2">
           <div className="col-span-2 md:col-span-4 mb-5">
             <div className="flex justify-end items-center gap-3">

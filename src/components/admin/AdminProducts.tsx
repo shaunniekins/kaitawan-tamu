@@ -15,10 +15,8 @@ import {
   Avatar,
   Pagination,
 } from "@nextui-org/react";
-import useUsers from "@/hooks/useUsers";
 import React from "react";
 import { useState, useEffect } from "react";
-import { supabaseAdmin } from "@/utils/supabase";
 import useItemInventory from "@/hooks/useItemInventory";
 import { updateItemInventoryData } from "@/app/api/itemInventoryIUD";
 
@@ -31,7 +29,7 @@ const AdminProductsComponent = () => {
   const [selectedItem, setSelectedItem] = useState<any | null>(null);
   const [productListingFilter, setProductListingFilter] = useState("pending");
 
-  const { items, loadingItems, totalItems, errorItems } = useItemInventory(
+  const { items, loadingItems, totalItems } = useItemInventory(
     rowsPerPage,
     page,
     productListingFilter,
@@ -44,6 +42,7 @@ const AdminProductsComponent = () => {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
   useEffect(() => {
+    // console.log(items);
     setPendingItems(items);
   }, [items]);
 
@@ -60,13 +59,24 @@ const AdminProductsComponent = () => {
     setSelectedItem(null);
   };
 
-  //   if (loadingItems) {
-  //     return (
-  //       <div className="h-full w-full flex justify-center items-center">
-  //         Loading...
-  //       </div>
-  //     );
-  //   }
+  const getDisplayImageUrl = (imageUrls: any[]) => {
+    if (!imageUrls || imageUrls.length === 0) {
+      return "https://fakeimg.pl/500x500?text=img&font=bebas";
+    }
+
+    // Find the first non-video URL
+    const firstImageUrl = imageUrls.find((img) => {
+      const url = img.url.toLowerCase();
+      return (
+        !url.endsWith(".mp4") && !url.endsWith(".mov") && !url.endsWith(".avi")
+      );
+    });
+
+    // If found, return it; otherwise return the default image
+    return firstImageUrl
+      ? firstImageUrl.url
+      : "https://fakeimg.pl/500x500?text=img&font=bebas";
+  };
 
   return (
     <>
@@ -83,24 +93,17 @@ const AdminProductsComponent = () => {
               </ModalHeader>
               <ModalBody>
                 <div className="flex gap-2">
-                  <Image
-                    alt="Product Image"
-                    className={`${
-                      loadingItems && "h-56 w-56"
-                    } object-cover rounded-none w-full rounded-b-md aspect-square`}
-                    src={
-                      loadingItems
-                        ? "https://fakeimg.pl/500x500?text=img&font=bebas"
-                        : selectedItem.image_urls &&
-                          selectedItem.image_urls.length > 0
-                        ? selectedItem.image_urls[0].url.endsWith(".mp4")
-                          ? selectedItem.image_urls.length > 1
-                            ? selectedItem.image_urls[1].url
-                            : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                          : selectedItem.image_urls[0].url
-                        : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                    }
-                  />
+                  <div className="w-56 h-56">
+                    <Image
+                      alt="Product Image"
+                      className="w-full h-full object-cover"
+                      src={
+                        loadingItems
+                          ? "https://fakeimg.pl/500x500?text=img&font=bebas"
+                          : getDisplayImageUrl(selectedItem?.image_urls)
+                      }
+                    />
+                  </div>
                   <div className="truncate">
                     <h6 className="truncate font-semibold">
                       {selectedItem.item_name}
@@ -163,8 +166,8 @@ const AdminProductsComponent = () => {
           )}
         </ModalContent>
       </Modal>
-      <div className="w-full flex justify-start flex-col overflow-y-auto">
-        <div className="w-full flex justify-between">
+      <div className="w-full flex justify-start flex-col overflow-y-auto p-4 bg-gray-100">
+        <div className="w-full flex justify-between items-center mb-4">
           <Pagination
             isCompact
             showControls
@@ -194,26 +197,26 @@ const AdminProductsComponent = () => {
           </Select>
         </div>
         {pendingItems.length === 0 ? (
-          <div className="w-full h-[75%] flex items-center justify-center">
+          <div className="w-full h-[75%] flex items-center justify-center bg-white rounded-lg shadow-md">
             <p className="text-gray-500">No items available</p>
           </div>
         ) : (
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
             {pendingItems.map((item, index) => (
-              <Card key={index} className="rounded-md shadow-none w-full">
+              <Card
+                key={index}
+                className="rounded-md shadow-md w-full bg-white"
+              >
                 <CardBody className="w-full">
                   <div className="p-0 w-full flex justify-between">
                     <div className="flex gap-2 overflow-hidden">
-                      <Image
-                        alt="Card background"
-                        // w-full aspect-square
-                        className="object-cover rounded-none rounded-b-md h-32 w-32"
-                        src={
-                          item.image_urls && item?.image_urls.length > 0
-                            ? item.image_urls[0]
-                            : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                        }
-                      />
+                      <div className="h-32 w-32">
+                        <Image
+                          alt="Card background"
+                          className="w-full h-full object-cover"
+                          src={getDisplayImageUrl(item.image_urls)}
+                        />
+                      </div>
                       <div className="truncate">
                         <h6 className="truncate font-semibold">
                           {item.item_name}

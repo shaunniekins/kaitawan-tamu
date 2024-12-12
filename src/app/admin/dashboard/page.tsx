@@ -34,12 +34,12 @@ export default function AdminDashboard() {
   return (
     <>
       {isSigningOut ? (
-        <div className="h-[100svh] w-screen flex justify-center items-center">
+        <div className="h-[100svh] w-screen flex justify-center items-center bg-gray-100">
           <Spinner color="success" />
         </div>
       ) : (
-        <div className="h-[100svh] w-screen flex flex-col relative">
-          <header className="p-4 w-full flex items-center justify-center shadow-sm">
+        <div className="h-[100svh] w-screen flex flex-col relative bg-gray-100">
+          <header className="p-4 w-full flex items-center justify-center shadow-sm bg-white">
             <div className="w-full max-w-6xl flex justify-between items-center">
               <Link
                 className="flex items-center text-2xl font-bold"
@@ -82,7 +82,6 @@ export default function AdminDashboard() {
                   size="lg"
                   fullWidth={true}
                   variant="underlined"
-                  // disabledKeys={["settings", "users"]}
                   onSelectionChange={handleSelectionChange}
                 >
                   <Tab
@@ -91,9 +90,6 @@ export default function AdminDashboard() {
                       <div className="flex items-center space-x-2">
                         <RxDashboard />
                         <span>Dashboard</span>
-                        {/* <Chip size="sm" variant="faded">
-                          1
-                        </Chip> */}
                       </div>
                     }
                   />
@@ -115,26 +111,16 @@ export default function AdminDashboard() {
                       </div>
                     }
                   />
-                  {/* <Tab
-                    key="settings"
-                    title={
-                      <div className="flex items-center space-x-2">
-                        <RxGear />
-                        <span>Settings</span>
-                      </div>
-                    }
-                  /> */}
                 </Tabs>
               </div>
             </div>
           </header>
-          <div className="h-full w-full p-4 flex mb-8 overflow-hidden">
+          <div className="h-full w-full p-4 flex mb-8 overflow-hidden bg-gray-100">
             <div className="flex justify-center items-start w-full h-full">
               <div className="max-w-6xl w-full h-full flex justify-center">
                 {currentTab === "dashboard" && <AdminDashboardComponent />}
                 {currentTab === "products" && <AdminProductsComponent />}
                 {currentTab === "users" && <AdminUserComponent />}
-                {/* {currentTab === "settings" && <div>Settings</div>} */}
               </div>
             </div>
           </div>
