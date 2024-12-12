@@ -63,12 +63,11 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
     setIsLoading(loadingItems);
   }, [loadingItems]);
 
-  const {
-    chatMessages,
-    totalChatMessages,
-    loadingChatMessages,
-    errorChatMessages,
-  } = useAIChatMessages(rowsPerPageMessages, currentPageMessages, user?.id);
+  const { chatMessages } = useAIChatMessages(
+    rowsPerPageMessages,
+    currentPageMessages,
+    user?.id
+  );
 
   // Initialize selectedTags based on tagParam
   useEffect(() => {
@@ -205,7 +204,112 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
   }, [chatMessages, isAiChatOpen]);
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    <div className="flex flex-col h-full">
+      {/* Category Filter - Fixed at top */}
+      <div className="sticky top-0 z-10 bg-white w-full flex overflow-x-auto py-2 md:px-2 gap-2 custom-scrollbar">
+        {tags.map((tag) => (
+          <Chip
+            key={tag}
+            color={selectedTags.includes(tag) ? "success" : "default"}
+            className="cursor-pointer"
+            onClick={() => toggleTagSelection(tag)}
+          >
+            {tag}
+          </Chip>
+        ))}
+      </div>
+
+      {/* Main content area with proper padding and scroll */}
+      <div className="flex-1 overflow-y-auto px-2 pb-24 custom-scrollbar">
+        {isLoading && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <Spinner color="success" />
+          </div>
+        )}
+
+        {!isLoading && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {items.length === 0 ? (
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <p className="text-gray-500">No items available</p>
+              </div>
+            ) : (
+              items.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    setIsLoading(true);
+                    return router.push(`explore/${item.item_id}`);
+                  }}
+                >
+                  <Card className="rounded-md shadow-none">
+                    <CardBody className="p-0 w-full">
+                      <Image
+                        alt="Product Image"
+                        className={`${
+                          isLoading && "h-56 w-56"
+                        } object-cover rounded-none w-full rounded-b-md aspect-square`}
+                        src={
+                          isLoading
+                            ? "https://fakeimg.pl/500x500?text=img&font=bebas"
+                            : item.image_urls && item.image_urls.length > 0
+                            ? item.image_urls[0].url.endsWith(".mp4")
+                              ? item.image_urls.length > 1
+                                ? item.image_urls[1].url
+                                : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                              : item.image_urls[0].url
+                            : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                        }
+                      />
+                    </CardBody>
+                    <CardFooter className="py-1 px-0 flex-col items-start rounded-none">
+                      <div className="w-full flex justify-between">
+                        <p className="font-semibold text-sm truncate">
+                          {item.item_name}
+                        </p>
+                        <div className="flex gap-1">
+                          {item.item_selling_type === "sell" ? (
+                            <MdOutlineSell size={20} />
+                          ) : (
+                            <RiAuctionLine size={20} />
+                          )}
+                        </div>
+                      </div>
+                      <h4 className="font-semibold text-medium text-[#008B47]">
+                        <span className="text-small">₱</span>
+                        {parseFloat(item.item_price).toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </h4>
+                      <div className="flex gap-1">
+                        <Avatar
+                          src={item.seller_profile_picture}
+                          className="w-4 h-4 text-xs"
+                          disableAnimation
+                        />
+                        <h6 className="text-xs truncate">
+                          {item.seller_first_name} {item.seller_last_name}
+                        </h6>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* AI Button - Fixed at bottom */}
+        <Button
+          key="ai-button"
+          isIconOnly
+          startContent={<RiRobot2Line color="white" size={35} />}
+          className="fixed right-2 lg:right-96 bottom-20 lg:bottom-10 bg-[#008B47] h-14 w-14 p-2 rounded-full z-50"
+          onClick={() => setIsAiChatOpen(true)}
+        />
+      </div>
+
       <Modal
         backdrop="blur"
         placement="center"
@@ -316,107 +420,6 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
           )}
         </ModalContent>
       </Modal>
-      {isLoading && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <Spinner color="success" />
-        </div>
-      )}
-
-      {/* Category Filter */}
-      <div className="w-full flex overflow-x-auto my-2 md:px-2 gap-2 custom-scrollbar">
-        {tags.map((tag) => (
-          <Chip
-            key={tag}
-            color={selectedTags.includes(tag) ? "success" : "default"}
-            className="cursor-pointer"
-            onClick={() => toggleTagSelection(tag)}
-          >
-            {tag}
-          </Chip>
-        ))}
-      </div>
-
-      {!isLoading && (
-        <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 gap-3 px-2">
-          {/* AI */}
-          <Button
-            key="ai-button"
-            isIconOnly
-            startContent={<RiRobot2Line color="white" size={35} />}
-            className="fixed ml-2 right-2 lg:right-96 bottom-20 lg:bottom-10 bg-[#008B47] h-14 w-14 p-2 rounded-full"
-            onClick={() => setIsAiChatOpen(true)}
-          />
-
-          {items.length === 0 ? (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <p className="text-gray-500">No items available</p>
-            </div>
-          ) : (
-            items.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => {
-                  setIsLoading(true);
-                  return router.push(`explore/${item.item_id}`);
-                }}
-              >
-                <Card className="rounded-md shadow-none">
-                  <CardBody className="p-0 w-full">
-                    <Image
-                      alt="Product Image"
-                      className={`${
-                        isLoading && "h-56 w-56"
-                      } object-cover rounded-none w-full rounded-b-md aspect-square`}
-                      src={
-                        isLoading
-                          ? "https://fakeimg.pl/500x500?text=img&font=bebas"
-                          : item.image_urls && item.image_urls.length > 0
-                          ? item.image_urls[0].url.endsWith(".mp4")
-                            ? item.image_urls.length > 1
-                              ? item.image_urls[1].url
-                              : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                            : item.image_urls[0].url
-                          : "https://fakeimg.pl/500x500?text=img&font=bebas"
-                      }
-                    />
-                  </CardBody>
-                  <CardFooter className="py-1 px-0 flex-col items-start rounded-none">
-                    <div className="w-full flex justify-between">
-                      <p className="font-semibold text-sm truncate">
-                        {item.item_name}
-                      </p>
-                      <div className="flex gap-1">
-                        {item.item_selling_type === "sell" ? (
-                          <MdOutlineSell size={20} />
-                        ) : (
-                          <RiAuctionLine size={20} />
-                        )}
-                      </div>
-                    </div>
-                    <h4 className="font-semibold text-medium text-[#008B47]">
-                      <span className="text-small">₱</span>
-                      {parseFloat(item.item_price).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </h4>
-                    <div className="flex gap-1">
-                      <Avatar
-                        src={item.seller_profile_picture}
-                        className="w-4 h-4 text-xs"
-                        disableAnimation
-                      />
-                      <h6 className="text-xs truncate">
-                        {item.seller_first_name} {item.seller_last_name}
-                      </h6>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </div>
-            ))
-          )}
-        </div>
-      )}
     </div>
   );
 };

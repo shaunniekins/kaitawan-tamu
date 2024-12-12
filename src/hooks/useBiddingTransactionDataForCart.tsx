@@ -69,7 +69,7 @@ const useBiddingTransactionData = (userId: string) => {
 
         if (inProgressResponse && inProgressResponse.data.length > 0) {
           // Handle if item is already in progress purchase
-          console.log("Item is already in progress purchase");
+          // console.log("Item is already in progress purchase");
         } else {
           setItems(itemsResponse.data);
         }
@@ -89,7 +89,7 @@ const useBiddingTransactionData = (userId: string) => {
         "postgres_changes",
         { event: "*", schema: "public", table: "BiddingTransactions" },
         (payload) => {
-          console.log("Received bidding transaction update:", payload);
+          // console.log("Received bidding transaction update:", payload);
           fetchBiddingTransactionDataPerUser();
         }
       )
@@ -101,7 +101,7 @@ const useBiddingTransactionData = (userId: string) => {
         "postgres_changes",
         { event: "*", schema: "public", table: "ItemInventory" },
         (payload) => {
-          console.log("Received item inventory update:", payload);
+          // console.log("Received item inventory update:", payload);
           fetchBiddingTransactionDataPerUser();
         }
       )

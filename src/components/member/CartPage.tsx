@@ -27,10 +27,10 @@ const CartPage = () => {
     error,
   } = useBiddingTransactionData(user?.id);
 
-  useEffect(() => {
-    console.log("highestBidOffer:", highestBidOffer);
-    console.log("items:", items);
-  }, [items]);
+  // useEffect(() => {
+  //   console.log("highestBidOffer:", highestBidOffer);
+  //   console.log("items:", items);
+  // }, [items]);
 
   // useEffect(() => {
   //   console.log("items:", items);

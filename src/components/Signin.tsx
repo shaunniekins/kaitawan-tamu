@@ -49,6 +49,22 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      alert("Please enter your email address first.");
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+    if (error) {
+      console.error("Error resetting password:", error.message);
+      alert(error.message);
+    } else {
+      alert("Password reset email sent successfully.");
+    }
+  };
+
   return (
     <div className="w-full bg-white relative">
       <div className="absolute top-3 right-3">
@@ -85,7 +101,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
           className="animate-in flex-1 flex flex-col w-full justify-center gap-2"
           onSubmit={handleSubmit}
         >
-          <div className="flex flex-col rounded-md shadow-sm gap-3 mb-16">
+          <div className="flex flex-col rounded-md shadow-sm gap-3 mb-16 px-2">
             <Input
               type="email"
               label="Email"
@@ -122,15 +138,26 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
               }
             />
 
-            <Button
-              type="submit"
-              color="success"
-              disabled={pending}
-              size="lg"
-              className="text-white"
-            >
-              {signInPending ? "Signing In..." : "Sign In"}
-            </Button>
+            <div className="flex flex-col gap-1">
+              <Button
+                type="submit"
+                color="success"
+                disabled={pending}
+                size="lg"
+                className="text-white"
+              >
+                {signInPending ? "Signing In..." : "Sign In"}
+              </Button>
+              <Button
+                type="button"
+                variant="light"
+                color="success"
+                onClick={handleForgotPassword}
+                // className="mb-2"
+              >
+                Forgot Password?
+              </Button>
+            </div>
           </div>
         </form>
         <Button

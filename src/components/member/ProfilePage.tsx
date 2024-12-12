@@ -133,7 +133,7 @@ const ProfilePage = () => {
     setDisplayImageOpen(false);
 
     const files = e.target.files;
-    console.log("files", files);
+    // console.log("files", files);
 
     if (files && files[0]) {
       setDisplayImage((prevState) => ({

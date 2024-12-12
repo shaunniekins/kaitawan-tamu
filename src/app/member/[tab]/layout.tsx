@@ -101,57 +101,53 @@ export default function DashboardLayout({
   // }
 
   return (
-    <section className="h-[100svh] w-screen overflow-hidden">
+    <section className="h-[100svh] w-screen flex flex-col overflow-hidden">
+      {isLargeScreen && (
+        <div className="h-10 w-full">
+          {WebNavBar(navigationItems, pathname, setIsLoading, router)}
+        </div>
+      )}
+
       <div
-        //   ${pathname === "/member/chat" ? "mb-0" : "mb-16"}
-        className={`h-full w-full flex flex-col justify-center items-center`}
+        className={`flex-1 flex flex-col ${
+          isLargeScreen && "max-w-4xl mx-auto"
+        } w-full relative overflow-hidden`}
       >
-        {isLargeScreen && (
-          <div className="h-10 w-full z-50">
-            {WebNavBar(navigationItems, pathname, setIsLoading, router)}
-          </div>
-        )}
         <div
           className={`${
-            isLargeScreen && "max-w-4xl mx-auto"
-          } flex-grow h-full w-full`}
+            (isLargeScreen ||
+              pathname === "/member/account" ||
+              pathname === "/member/sell" ||
+              pathname === "/member/chat") &&
+            "hidden"
+          }`}
         >
-          <div
-            className={`${
-              (isLargeScreen ||
-                pathname === "/member/account" ||
-                pathname === "/member/sell" ||
-                pathname === "/member/chat") &&
-              // && pathname !== "/member/explore"
-              "hidden"
-            }`}
-          >
-            <ExploreHeader />
-          </div>
-          <div className="flex-grow h-full w-full overflow-auto">
-            {children}
-          </div>
+          <ExploreHeader />
         </div>
-        {!isLargeScreen && (
-          <div
-            className={`${
-              (pathname === "/member/sell" ||
-                pathname.startsWith("/member/explore/") ||
-                pathname === "/member/chat") &&
-              "hidden"
-            } h-16 w-full z-50 shadow-lg`}
-          >
-            {MobileNavBar(navigationItems, pathname, setIsLoading, router)}
-          </div>
-        )}
-        <footer
-          className={`${
-            pathname === "/member/chat" ? "hidden" : "hidden lg:block"
-          } w-full text-center text-xs py-2 bg-[#008B47] text-white`}
-        >
-          All rights reserved to Kaitawan Tamu ({new Date().getFullYear()})
-        </footer>
+
+        <div className="flex-1 overflow-hidden">{children}</div>
       </div>
+
+      {!isLargeScreen && (
+        <div
+          className={`${
+            (pathname === "/member/sell" ||
+              pathname.startsWith("/member/explore/") ||
+              pathname === "/member/chat") &&
+            "hidden"
+          } h-16 w-full z-50 shadow-lg bg-white`}
+        >
+          {MobileNavBar(navigationItems, pathname, setIsLoading, router)}
+        </div>
+      )}
+
+      <footer
+        className={`${
+          pathname === "/member/chat" ? "hidden" : "hidden lg:block"
+        } w-full text-center text-xs py-2 bg-[#008B47] text-white`}
+      >
+        All rights reserved to Kaitawan Tamu ({new Date().getFullYear()})
+      </footer>
     </section>
   );
 }
