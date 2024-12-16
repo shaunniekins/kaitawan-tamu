@@ -168,7 +168,7 @@ const WebNavBar = (
               pathname === path ? "border-[#008B47] bg-green-50" : ""
             }`}
             onClick={() => {
-              if (pathname.includes(path)) return;
+              if (pathname === path) return;
               setIsLoading(true);
               return router.push(path);
             }}
@@ -192,7 +192,7 @@ const MobileNavBar = (
   return (
     <div className="max-w-6xl mx-auto flex justify-between items-center bg-white">
       {navigationItems
-        .filter(({ name }) => name !== "Chat") // Exclude Chat
+        .filter(({ name }) => name !== "Chat")
         .map(({ path, name, Icon }) => (
           <button
             key={name}
@@ -200,7 +200,7 @@ const MobileNavBar = (
               pathname === path ? "border-[#008B47] bg-green-50" : ""
             } ${path === "/member/sell" ? "hidden lg:flex" : ""}`}
             onClick={() => {
-              if (pathname.includes(path)) return;
+              if (pathname === path) return;
               setIsLoading(true);
               return router.push(path);
             }}
