@@ -36,16 +36,32 @@ export default function Video360Viewer({ videoSrc }: Video360ViewerProps) {
           : (e as React.MouseEvent).clientX;
       const dragDelta = clientX - dragStartX;
       const videoDuration = videoRef.current.duration;
-      const videoWidth = videoRef.current.clientWidth; // More precise than window.innerWidth
+
+      // Check if duration is valid
+      if (!isFinite(videoDuration) || videoDuration <= 0) {
+        return;
+      }
+
+      const videoWidth = videoRef.current.clientWidth;
 
       // Calculate the scrub position based on drag distance and video width
       const scrubTime = (dragDelta / videoWidth) * videoDuration;
 
-      // Update video current time, ensuring it loops within the duration
-      const newTime =
-        (videoCurrentTime + scrubTime + videoDuration) % videoDuration;
-      videoRef.current.currentTime = newTime;
-      setVideoCurrentTime(newTime);
+      // Calculate new time ensuring it stays within valid bounds
+      let newTime = videoCurrentTime + scrubTime;
+
+      // Ensure the time loops within 0 to duration
+      if (newTime < 0) {
+        newTime = videoDuration + (newTime % videoDuration);
+      } else {
+        newTime = newTime % videoDuration;
+      }
+
+      // Final check to ensure we have a valid time
+      if (isFinite(newTime) && newTime >= 0 && newTime <= videoDuration) {
+        videoRef.current.currentTime = newTime;
+        setVideoCurrentTime(newTime);
+      }
     }
   };
 

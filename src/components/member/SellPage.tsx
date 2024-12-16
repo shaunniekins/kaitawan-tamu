@@ -20,6 +20,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import ImageSelector from "../ImageSelector";
+import Joyride, { Step } from "react-joyride";
 
 const SellPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -36,6 +37,7 @@ const SellPage = () => {
   const [newSelectedSellingType, setNewSelectedSellingType] =
     useState<string>("sell");
   const [isLoading, setIsLoading] = useState(false);
+  const [isTourOpen, setIsTourOpen] = useState(false);
 
   const categoryOptions = [
     "Clothing",
@@ -50,6 +52,28 @@ const SellPage = () => {
     "Lightly used",
     "Moderately used",
     "Heavily used",
+  ];
+
+  const tourSteps: Step[] = [
+    {
+      target: ".upload-section",
+      content:
+        "Click in the upload input to upload images and video. You can upload up to 5 images and 1 video (within 12-15 seconds).",
+      placement: "bottom",
+      disableBeacon: true,
+    },
+    {
+      target: ".video-instruction",
+      content:
+        "For the video: Record a 12-15 second video of your item from different angles. This will serve as a 3D view for buyers.",
+      placement: "bottom",
+    },
+    {
+      target: ".image-instruction",
+      content:
+        "For images: Upload clear, well-lit photos in portrait or square format. Drag and drop to reorder them.",
+      placement: "bottom",
+    },
   ];
 
   // Image resizing function (assuming you have the resizeImage function defined)
@@ -165,6 +189,22 @@ const SellPage = () => {
 
   return (
     <>
+      <Joyride
+        steps={tourSteps}
+        run={isTourOpen}
+        continuous
+        showSkipButton
+        styles={{
+          options: {
+            zIndex: 10000,
+          },
+        }}
+        callback={(data) => {
+          if (data.status === "finished" || data.status === "skipped") {
+            setIsTourOpen(false);
+          }
+        }}
+      />
       <div className="w-full h-full flex flex-col items-center">
         <SellHeader />
         {isLoading && (
@@ -176,7 +216,7 @@ const SellPage = () => {
           <>
             <div className="w-full flex flex-col flex-grow px-2">
               <div className="w-full flex flex-col gap-6 py-3 lg:py-2 mt-3 flex-grow">
-                <div>
+                <div className="upload-section">
                   <ImageSelector
                     isDisabled={false}
                     title="Items"
@@ -187,8 +227,15 @@ const SellPage = () => {
                   <p className="text-xs text-gray-600">
                     Ensure the images are in portrait or square mode. You can
                     upload 1 video (as the 3d picture) and 1-5 images and drag
-                    and drop to reorder them.
+                    and drop to reorder them.{" "}
+                    <button
+                      onClick={() => setIsTourOpen(true)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      How?
+                    </button>
                   </p>
+                  <div className="hidden video-instruction image-instruction" />
                 </div>
                 <RadioGroup
                   label="Select Selling Type"

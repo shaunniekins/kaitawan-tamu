@@ -28,6 +28,7 @@ import { IoChevronBack, IoSendOutline } from "react-icons/io5";
 import { MdOutlineSell } from "react-icons/md";
 import { RiAuctionLine, RiRobot2Line } from "react-icons/ri";
 import { useSelector } from "react-redux";
+import { generateVideoThumbnail } from "@/utils/compUtils";
 
 interface ExplorePageProps {
   tagParam: string | null;
@@ -68,6 +69,37 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
     currentPageMessages,
     user?.id
   );
+
+  const [videoThumbnails, setVideoThumbnails] = useState<
+    Record<string, string>
+  >({});
+
+  useEffect(() => {
+    const generateThumbnails = async () => {
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.image_urls?.[0]?.url.endsWith(".mp4")) {
+          try {
+            const thumbnail = await generateVideoThumbnail(
+              item.image_urls[0].url
+            );
+            setVideoThumbnails((prev) => ({
+              ...prev,
+              [item.item_id]: thumbnail,
+            }));
+          } catch (error) {
+            console.error(
+              `Error generating thumbnail for ${item.item_id}:`,
+              error
+            );
+          }
+        }
+      }
+    };
+
+    generateThumbnails();
+  }, [items]);
 
   // Initialize selectedTags based on tagParam
   useEffect(() => {
@@ -254,9 +286,8 @@ const ExplorePage = ({ tagParam }: ExplorePageProps) => {
                             ? "https://fakeimg.pl/500x500?text=img&font=bebas"
                             : item.image_urls && item.image_urls.length > 0
                             ? item.image_urls[0].url.endsWith(".mp4")
-                              ? item.image_urls.length > 1
-                                ? item.image_urls[1].url
-                                : "https://fakeimg.pl/500x500?text=img&font=bebas"
+                              ? videoThumbnails[item.item_id] ||
+                                "https://fakeimg.pl/500x500?text=img&font=bebas"
                               : item.image_urls[0].url
                             : "https://fakeimg.pl/500x500?text=img&font=bebas"
                         }

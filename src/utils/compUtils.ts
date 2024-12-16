@@ -30,19 +30,36 @@ export const resizeImage = (file: File) => {
 };
 
 export const generateVideoThumbnail = (videoUrl: string): Promise<string> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const video = document.createElement("video");
     video.src = videoUrl;
     video.crossOrigin = "anonymous";
-    video.currentTime = 1; // Capture the thumbnail at 1 second
+    video.currentTime = 1;
+
+    const timeoutId = setTimeout(() => {
+      reject(new Error("Thumbnail generation timed out"));
+    }, 10000); // 10 second timeout
+
+    video.addEventListener("error", (e) => {
+      clearTimeout(timeoutId);
+      reject(new Error(`Video load error: ${e}`));
+    });
 
     video.addEventListener("loadeddata", () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext("2d");
-      context?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/png"));
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Could not get canvas context");
+
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        clearTimeout(timeoutId);
+        resolve(canvas.toDataURL("image/png"));
+      } catch (error) {
+        clearTimeout(timeoutId);
+        reject(error);
+      }
     });
   });
 };
