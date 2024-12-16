@@ -24,6 +24,8 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { deleteItemInventoryData } from "@/app/api/itemInventoryIUD";
 import { checkerPurchaseItemStatusByUser } from "@/app/api/checkers";
 import { deleteInProgressPurchaseData } from "@/app/api/inProgressPurchasesIUD";
+import { Rating } from "@mui/material";
+import { supabase } from "@/utils/supabase";
 
 const ListingPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -45,9 +47,41 @@ const ListingPage = () => {
     undefined
   );
 
+  const [itemRatings, setItemRatings] = useState<{ [key: number]: number }>({});
+
   useEffect(() => {
     setIsLoading(loadingItems);
   }, [loadingItems]);
+
+  useEffect(() => {
+    const fetchRatings = async () => {
+      if (!items.length) return;
+
+      const itemIds = items.map((item) => item.item_id);
+
+      const { data, error } = await supabase
+        .from("RatingTransactions")
+        .select("item_id, rating")
+        .in("item_id", itemIds);
+
+      if (error) {
+        console.error("Error fetching ratings:", error);
+        return;
+      }
+
+      const ratingsMap = data.reduce(
+        (acc: any, curr: any) => ({
+          ...acc,
+          [curr.item_id]: curr.rating,
+        }),
+        {}
+      );
+
+      setItemRatings(ratingsMap);
+    };
+
+    fetchRatings();
+  }, [items]);
 
   const tabs = [
     { id: "offer", label: "Offer" },
@@ -136,7 +170,7 @@ const ListingPage = () => {
                                 <Image
                                   alt="Product Image"
                                   className={`${
-                                    isLoading && "h-56 w-56"
+                                    isLoading && "h-60 w-60"
                                   } object-cover rounded-none w-full rounded-b-md aspect-square`}
                                   src={
                                     isLoading
@@ -198,19 +232,35 @@ const ListingPage = () => {
                                 }
                               )}
                             </h4>
-                            <h6
-                              className={`text-xs uppercase ${
-                                item.item_status === "approved"
-                                  ? "text-green-500"
-                                  : item.item_status === "pending"
-                                  ? "text-gray-500"
-                                  : item.item_status === "sold"
-                                  ? "text-purple-500"
-                                  : ""
-                              }`}
-                            >
-                              {item.item_status}
-                            </h6>
+                            <div className="w-full flex items-center justify-between gap-2">
+                              <h6
+                                className={`text-xs uppercase ${
+                                  item.item_status === "approved"
+                                    ? "text-green-500"
+                                    : item.item_status === "pending"
+                                    ? "text-gray-500"
+                                    : item.item_status === "sold"
+                                    ? "text-purple-500"
+                                    : ""
+                                }`}
+                              >
+                                {item.item_status}
+                              </h6>
+                              {item.item_status === "sold" &&
+                                itemRatings[item.item_id] && (
+                                  <div className="flex items-center gap-2">
+                                    <Rating
+                                      value={itemRatings[item.item_id]}
+                                      readOnly
+                                      size="small"
+                                    />
+                                    {/* <span className="text-xs">
+                                      Buyer rated {itemRatings[item.item_id]}{" "}
+                                      stars
+                                    </span> */}
+                                  </div>
+                                )}
+                            </div>
                           </CardFooter>
                         </Card>
                       ))}
