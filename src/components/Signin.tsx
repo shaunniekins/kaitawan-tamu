@@ -79,7 +79,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
           variant="light"
           size="sm"
           onClick={() => {
-            return router.push(
+            router.push(
               userType === "administrator"
                 ? "/ident/signin?usertype=member"
                 : "/ident/signin?usertype=administrator"
@@ -115,7 +115,10 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                isPassForgot && setSuccess(false);
+
+                if (isPassForgot) {
+                  setSuccess(false);
+                }
               }}
             />
             <Input
