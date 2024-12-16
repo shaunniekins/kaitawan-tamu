@@ -26,8 +26,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const handleSignInClick = async () => {
     setSignInPending(true);
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -44,10 +43,11 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
       if (user) {
         dispatch(setUser(user));
       }
-      // console.log("Signed in successfully:", data);
       router.push(`/${userType}`);
     }
   };
+
+  const [isPassForgot, setIsPassForgot] = useState(false);
 
   const handleForgotPassword = async () => {
     if (!email) {
@@ -55,12 +55,15 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
       return;
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://kaitawan-tamu-te.vercel.app/ident/reset-password",
+    });
 
     if (error) {
       console.error("Error resetting password:", error.message);
       alert(error.message);
     } else {
+      setEmail("");
       alert("Password reset email sent successfully.");
     }
   };
@@ -97,10 +100,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
             <h6 className="text-xs capitalize font-normal">{userType}</h6>
           </div>
         </div>
-        <form
-          className="animate-in flex-1 flex flex-col w-full justify-center gap-2"
-          onSubmit={handleSubmit}
-        >
+        <div className="animate-in flex-1 flex flex-col w-full justify-center gap-2">
           <div className="flex flex-col rounded-md shadow-sm gap-3 mb-16 px-2">
             <Input
               type="email"
@@ -121,6 +121,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
               isRequired
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className={`${isPassForgot ? "hidden" : ""}`}
               endContent={
                 <button
                   className="focus:outline-none"
@@ -137,31 +138,42 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
                 </button>
               }
             />
-
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-4 pb-5">
               <Button
-                type="submit"
                 color="success"
                 disabled={pending}
                 size="lg"
                 className="text-white"
+                onClick={() => {
+                  if (isPassForgot) {
+                    handleForgotPassword();
+                  } else {
+                    handleSignInClick();
+                  }
+                }}
               >
-                {signInPending ? "Signing In..." : "Sign In"}
+                {!isPassForgot
+                  ? signInPending
+                    ? "Signing In..."
+                    : "Sign In"
+                  : "Reset Password"}
               </Button>
-              <Button
-                type="button"
-                variant="light"
-                color="success"
-                onClick={handleForgotPassword}
-                // className="mb-2"
+              <button
+                className="text-green-500 text-xs cursor-pointer"
+                onClick={() => {
+                  if (isPassForgot) {
+                    setIsPassForgot(false);
+                  } else {
+                    setIsPassForgot(true);
+                  }
+                }}
               >
-                Forgot Password?
-              </Button>
+                {isPassForgot ? "< Go back" : "Forgot Password?"}
+              </button>
             </div>
           </div>
-        </form>
+        </div>
         <Button
-          type="submit"
           variant="ghost"
           isDisabled={userType === "administrator"}
           color="success"
