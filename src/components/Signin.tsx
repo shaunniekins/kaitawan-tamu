@@ -48,6 +48,7 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
   };
 
   const [isPassForgot, setIsPassForgot] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleForgotPassword = async () => {
     if (!email) {
@@ -56,15 +57,17 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://kaitawan-tamu-te.vercel.app/ident/reset-password",
+      // redirectTo: "https://kaitawan-tamu-te.vercel.app/ident/reset-password",
+      // redirectTo: "http://localhost:3000/ident/reset-password",
+      redirectTo: `${window.location.origin}/ident/reset-password`,
     });
 
     if (error) {
       console.error("Error resetting password:", error.message);
-      alert(error.message);
+      alert("Error sending recovery email. Please try again later.");
     } else {
       setEmail("");
-      alert("Password reset email sent successfully.");
+      setSuccess(true);
     }
   };
 
@@ -110,7 +113,10 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
               color="success"
               isRequired
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                isPassForgot && setSuccess(false);
+              }}
             />
             <Input
               type={isInputUserPasswordVisible ? "text" : "password"}
@@ -158,6 +164,11 @@ const SigninComponent = ({ userType }: SigninComponentProps) => {
                     : "Sign In"
                   : "Reset Password"}
               </Button>
+              {isPassForgot && success && (
+                <div className="text-green-500 text-xs">
+                  Password reset email sent successfully.
+                </div>
+              )}
               <button
                 className="text-green-500 text-xs cursor-pointer"
                 onClick={() => {
