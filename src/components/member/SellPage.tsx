@@ -162,7 +162,7 @@ const SellPage = () => {
       item_description: newItemDescription,
       item_selling_type: newSelectedSellingType,
       seller_id: user?.id,
-      image_urls: imageUrls, // Store the array of image URLs with order
+      image_urls: imageUrls,
     };
 
     // Insert the item into the database
@@ -181,7 +181,6 @@ const SellPage = () => {
     setNewSelectedCondition("");
     setSelectedImages([]);
     setPreviewImages([]);
-    // setIsLoading(false);
 
     // Redirect to the listing page
     return router.push("/member/listing");
